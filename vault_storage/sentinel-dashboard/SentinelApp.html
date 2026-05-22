@@ -1,0 +1,955 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel-Archive Universal Dashboard</title>
+    <style>
+        :root {
+            --bg: #040813;
+            --bg-soft: #091125;
+            --panel: rgba(12, 20, 38, 0.82);
+            --panel-strong: rgba(11, 18, 34, 0.92);
+            --panel-border: rgba(148, 163, 184, 0.18);
+            --accent: #2dd4bf;
+            --accent-2: #38bdf8;
+            --accent-3: #f59e0b;
+            --danger: #fb7185;
+            --success: #34d399;
+            --text-muted: #94a3b8;
+            --text-soft: #cbd5e1;
+            --font-heading: "Space Grotesk", "Segoe UI", sans-serif;
+            --font-body: "Manrope", "Segoe UI", sans-serif;
+            --font-mono: "JetBrains Mono", Consolas, monospace;
+            --glow: 0 0 0 1px rgba(255,255,255,0.02), 0 18px 60px rgba(2, 6, 23, 0.45);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: #f8fafc;
+            font-family: var(--font-body);
+            background:
+                radial-gradient(circle at 15% 10%, rgba(45, 212, 191, 0.2), transparent 30%),
+                radial-gradient(circle at 90% 5%, rgba(56, 189, 248, 0.16), transparent 28%),
+                linear-gradient(160deg, #050a19, #040813 60%, #030712);
+            padding: 18px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            border: 1px solid var(--panel-border);
+            border-radius: 26px;
+            background: linear-gradient(180deg, rgba(7, 13, 26, 0.88), rgba(6, 11, 22, 0.82));
+            box-shadow: var(--glow);
+            backdrop-filter: blur(18px);
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at top left, rgba(45, 212, 191, 0.08), transparent 24%),
+                radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.06), transparent 28%);
+            pointer-events: none;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: center;
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            padding: 16px;
+            background: var(--panel);
+            margin-bottom: 16px;
+        }
+
+        .logo-wrap { display: flex; align-items: center; gap: 12px; }
+
+        .logo-mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: #082f49;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.4px;
+        }
+
+        .version-pill {
+            border: 1px solid rgba(45, 212, 191, 0.35);
+            color: #99f6e4;
+            border-radius: 999px;
+            padding: 5px 10px;
+            margin-left: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .top-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .meta-pill {
+            border: 1px solid var(--panel-border);
+            border-radius: 999px;
+            padding: 6px 10px;
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        .meta-pill.live {
+            border-color: rgba(52, 211, 153, 0.28);
+            color: #bbf7d0;
+            background: rgba(20, 83, 45, 0.24);
+        }
+
+        .meta-pill.warning {
+            border-color: rgba(245, 158, 11, 0.25);
+            color: #fde68a;
+            background: rgba(120, 53, 15, 0.2);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .tool-btn {
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.78);
+            color: var(--text-soft);
+            font-family: var(--font-body);
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(45, 212, 191, 0.35);
+            background: rgba(15, 23, 42, 0.98);
+        }
+
+        .tool-btn.primary {
+            border-color: rgba(45, 212, 191, 0.35);
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.22), rgba(56, 189, 248, 0.22));
+            color: #d9fffb;
+        }
+
+        .tool-btn.danger {
+            border-color: rgba(251, 113, 133, 0.3);
+            background: rgba(127, 29, 29, 0.26);
+            color: #fecdd3;
+        }
+
+        .tool-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.6;
+        }
+
+        .metric {
+            grid-column: span 3;
+            min-height: 120px;
+            animation: rise 0.45s ease both;
+        }
+
+        .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 800;
+        }
+
+        .value {
+            margin-top: 8px;
+            font-size: 1.55rem;
+            font-family: var(--font-heading);
+            font-weight: 800;
+        }
+
+        .sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 7px;
+        }
+
+        .status-card { grid-column: span 7; min-height: 280px; }
+        .feed-card { grid-column: span 5; min-height: 280px; }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .status-chip {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(251, 113, 133, 0.3);
+            color: #fecdd3;
+            background: rgba(251, 113, 133, 0.12);
+        }
+
+        .status-chip.healthy {
+            border-color: rgba(52, 211, 153, 0.35);
+            color: #a7f3d0;
+            background: rgba(52, 211, 153, 0.16);
+        }
+
+        .status-main {
+            font-size: clamp(1.7rem, 4.5vw, 2.9rem);
+            font-family: var(--font-heading);
+            margin: 8px 0 14px;
+        }
+
+        .critical { color: var(--danger); text-shadow: 0 0 20px rgba(251, 113, 133, 0.35); }
+        .healthy { color: var(--success); text-shadow: 0 0 20px rgba(52, 211, 153, 0.35); }
+
+        .bar-wrap {
+            margin-bottom: 14px;
+            border-radius: 999px;
+            background: #0f172a;
+            height: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .bar {
+            height: 100%;
+            width: 72%;
+            background: linear-gradient(90deg, #fb7185, #f43f5e);
+            transition: width 0.5s ease, background 0.5s ease;
+        }
+
+        .bar.ok {
+            background: linear-gradient(90deg, #34d399, #2dd4bf);
+        }
+
+        .bar.caution {
+            background: linear-gradient(90deg, #f59e0b, #fb7185);
+        }
+
+        .status-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .stat-mini {
+            border: 1px solid var(--panel-border);
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 0.8rem;
+        }
+
+        button {
+            margin-top: 14px;
+            background: linear-gradient(90deg, #0891b2, #06b6d4);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 0.92rem;
+            letter-spacing: 0.3px;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        button:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+        .feed-list {
+            display: grid;
+            gap: 10px;
+            max-height: 245px;
+            overflow: auto;
+            padding-right: 2px;
+        }
+
+        .feed-item {
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.65);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            animation: rise 0.5s ease both;
+        }
+
+        .feed-time {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            margin-bottom: 4px;
+        }
+
+        .ok { color: #86efac; }
+        .warn { color: #fcd34d; }
+        .bad { color: #fda4af; }
+
+        .lower {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .map-card { grid-column: span 8; min-height: 220px; }
+        .ops-card { grid-column: span 4; min-height: 220px; }
+
+        .matrix {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .shard {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            transition: transform 0.2s ease;
+        }
+
+        .shard:hover { transform: translateY(-1px); }
+        .shard.ok { background: rgba(52, 211, 153, 0.7); }
+        .shard.risk { background: rgba(251, 113, 133, 0.85); animation: pulse 1.2s infinite; }
+
+        .ops-item {
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.65);
+            margin-bottom: 8px;
+            font-size: 0.81rem;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .insight {
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.65);
+        }
+
+        .insight strong {
+            display: block;
+            margin-top: 5px;
+            font-size: 1rem;
+            color: #f8fafc;
+        }
+
+        .chart-wrap {
+            margin-top: 14px;
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.65), rgba(8, 15, 31, 0.82));
+            padding: 12px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .chart {
+            width: 100%;
+            height: 120px;
+            display: block;
+        }
+
+        .timeline {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 10px;
+            align-items: start;
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.65);
+            padding: 10px;
+        }
+
+        .timeline-time {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: #cbd5e1;
+        }
+
+        .timeline-text {
+            color: var(--text-soft);
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            margin-right: 6px;
+            background: var(--success);
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+            animation: breathe 2.3s ease-in-out infinite;
+        }
+
+        .terminal {
+            margin-top: 10px;
+            background: #010409;
+            border-radius: 10px;
+            border: 1px solid rgba(51, 65, 85, 0.7);
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            max-height: 120px;
+            overflow: auto;
+            color: #34d399;
+        }
+
+        footer {
+            margin-top: 14px;
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 11px 12px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.65);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.18); opacity: 0.65; }
+        }
+
+        @media (max-width: 1000px) {
+            .metric { grid-column: span 6; }
+            .status-card, .feed-card, .map-card, .ops-card { grid-column: span 12; }
+            .status-stats { grid-template-columns: 1fr; }
+            .insight-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 620px) {
+            body { padding: 10px; }
+            .container { padding: 10px; border-radius: 18px; }
+            .metric { grid-column: span 12; }
+            .value { font-size: 1.3rem; }
+            header { padding: 12px; }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Manrope:wght@500;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-wrap">
+                <div class="logo-mark">S</div>
+                <div>
+                    <div class="logo">SENTINEL ARCHIVE COMMAND SUITE <span class="version-pill">V2.2.0</span></div>
+                    <div class="top-meta" style="margin-top:6px;">
+                        <div class="meta-pill live"><span class="status-dot"></span>Live telemetry</div>
+                        <div class="meta-pill">AES-256 + PQC</div>
+                        <div class="meta-pill warning" id="clockPill">UTC 00:00:00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="toolbar">
+                <button class="tool-btn" onclick="toggleMode()" id="modeBtn">Stealth mode</button>
+                <button class="tool-btn primary" onclick="healSystem()" id="healBtnTop">Autonomous healing</button>
+                <button class="tool-btn" onclick="launchDrill()">Run resilience drill</button>
+                <button class="tool-btn danger" onclick="exportSnapshot()">Export snapshot</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card metric">
+                <div class="label">Protected Capacity</div>
+                <div class="value">12.8 PB</div>
+                <div class="sub">+4.8% over last 7 days</div>
+            </div>
+
+            <div class="card metric">
+                <div class="label">Cross-Region Latency</div>
+                <div class="value" id="latencyValue">3.9 ms</div>
+                <div class="sub">Optimized mirror route enabled</div>
+            </div>
+
+            <div class="card metric">
+                <div class="label">Active Clusters</div>
+                <div class="value">1,408</div>
+                <div class="sub">22 nodes joined this cycle</div>
+            </div>
+
+            <div class="card metric">
+                <div class="label">Threat Scan Rate</div>
+                <div class="value" id="scanValue">64.2k/s</div>
+                <div class="sub">Real-time anomaly heuristics</div>
+            </div>
+
+            <div class="card status-card">
+                <div class="status-header">
+                    <div>
+                        <div class="label">Global Integrity</div>
+                        <div id="statusLabel" class="status-main critical">THREAT DETECTED</div>
+                    </div>
+                    <div id="statusChip" class="status-chip">CRITICAL STATE</div>
+                </div>
+
+                <div class="bar-wrap"><div id="riskBar" class="bar"></div></div>
+
+                <div class="status-stats">
+                    <div class="stat-mini">
+                        Recovery SLA
+                        <div style="margin-top:4px; font-weight:800; color:#99f6e4;">2m 21s</div>
+                    </div>
+                    <div class="stat-mini">
+                        Risk Score
+                        <div id="riskScore" style="margin-top:4px; font-weight:800; color:#fecdd3;">72 / 100</div>
+                    </div>
+                    <div class="stat-mini">
+                        Availability
+                        <div id="availability" style="margin-top:4px; font-weight:800;">99.92%</div>
+                    </div>
+                </div>
+
+                <div class="insight-grid">
+                    <div class="insight">
+                        Drift window
+                        <strong id="driftValue">Low</strong>
+                    </div>
+                    <div class="insight">
+                        Mirror lag
+                        <strong id="mirrorLag">18 ms</strong>
+                    </div>
+                    <div class="insight">
+                        Restore ETA
+                        <strong id="etaValue">2m 21s</strong>
+                    </div>
+                </div>
+
+                <div class="chart-wrap">
+                    <div class="chart-header">
+                        <span>Integrity trend over the last 12 ticks</span>
+                        <span id="trendLabel">Early recovery</span>
+                    </div>
+                    <svg class="chart" viewBox="0 0 600 120" preserveAspectRatio="none" aria-label="Integrity trend chart">
+                        <defs>
+                            <linearGradient id="trendGradient" x1="0" x2="1" y1="0" y2="0">
+                                <stop offset="0%" stop-color="#fb7185" />
+                                <stop offset="50%" stop-color="#f59e0b" />
+                                <stop offset="100%" stop-color="#34d399" />
+                            </linearGradient>
+                        </defs>
+                        <polygon id="chartArea" points="" fill="rgba(45, 212, 191, 0.12)"></polygon>
+                        <polyline id="chartLine" points="" fill="none" stroke="url(#trendGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                    </svg>
+                </div>
+
+                <button id="healBtn" onclick="healSystem()">INITIALIZE AUTONOMOUS HEALING</button>
+            </div>
+
+            <div class="card feed-card">
+                <div class="label" style="margin-bottom:10px;">Live Incident Feed</div>
+                <div class="feed-list" id="feedList">
+                    <div class="feed-item"><span class="feed-time">[14:02:01]</span><span class="ok">Shard_4 checksum match confirmed.</span></div>
+                    <div class="feed-item"><span class="feed-time">[14:02:05]</span><span class="bad">Integrity drift in shard group alpha-0.</span></div>
+                    <div class="feed-item"><span class="feed-time">[14:02:06]</span><span class="warn">Parity stream requested from mirrors.</span></div>
+                    <div class="feed-item"><span class="feed-time">[14:02:10]</span><span class="ok">Recovery window established with zero data loss path.</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lower">
+            <div class="card map-card">
+                <div class="label">Shard Integrity Matrix</div>
+                <div class="matrix" id="matrix"></div>
+            </div>
+
+            <div class="card ops-card">
+                <div class="label">Operations Console</div>
+                <div class="ops-item">Geo replication: Dublin, Frankfurt, Virginia</div>
+                <div class="ops-item" id="opHealth">System health posture: Elevated risk</div>
+                <div class="ops-item" id="opSync">Sync throughput: 1.86 TB/s</div>
+                <div class="ops-item">Recent action: Snapshot policy refreshed</div>
+                <div class="terminal" id="terminalLog">
+                    <div>> Sentinel kernel initialized.</div>
+                    <div>> Quantum mirror handshake complete.</div>
+                    <div style="color:#fda4af;">> ALERT: alpha-0 cluster mismatch detected.</div>
+                    <div>> Awaiting autonomous repair trigger...</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            UNIVERSAL DEPLOYMENT READY: WINDOWS | LINUX | MACOS | IOS | ANDROID
+        </footer>
+    </div>
+
+    <script>
+        const matrixEl = document.getElementById('matrix');
+        const chartLine = document.getElementById('chartLine');
+        const chartArea = document.getElementById('chartArea');
+        const trendLabel = document.getElementById('trendLabel');
+        const modeBtn = document.getElementById('modeBtn');
+        const healBtn = document.getElementById('healBtn');
+        const healBtnTop = document.getElementById('healBtnTop');
+        const metrics = {
+            latencyValue: document.getElementById('latencyValue'),
+            scanValue: document.getElementById('scanValue'),
+            riskScore: document.getElementById('riskScore'),
+            availability: document.getElementById('availability'),
+            opSync: document.getElementById('opSync'),
+            clockPill: document.getElementById('clockPill'),
+            driftValue: document.getElementById('driftValue'),
+            mirrorLag: document.getElementById('mirrorLag'),
+            etaValue: document.getElementById('etaValue'),
+            statusLabel: document.getElementById('statusLabel'),
+            statusChip: document.getElementById('statusChip'),
+            riskBar: document.getElementById('riskBar'),
+            opHealth: document.getElementById('opHealth'),
+            terminalLog: document.getElementById('terminalLog'),
+            feedList: document.getElementById('feedList'),
+        };
+
+        const shardCount = 96;
+        const chartSeries = [74, 70, 68, 63, 59, 55, 49, 45, 38, 31, 22, 14];
+        let mode = 'alert';
+        let healthState = 'critical';
+        let isHealing = false;
+
+        for (let i = 0; i < shardCount; i++) {
+            const shard = document.createElement('div');
+            shard.className = 'shard ok';
+            if (i === 37 || i === 38) {
+                shard.className = 'shard risk';
+            }
+            matrixEl.appendChild(shard);
+        }
+
+        function renderChart() {
+            const width = 600;
+            const height = 120;
+            const step = width / Math.max(chartSeries.length - 1, 1);
+            const points = chartSeries.map((value, index) => {
+                const x = index * step;
+                const y = height - (value / 100) * (height - 16) - 8;
+                return [x, y];
+            });
+            chartLine.setAttribute('points', points.map(([x, y]) => `${x},${y}`).join(' '));
+            const area = [`0,${height}`, ...points.map(([x, y]) => `${x},${y}`), `${width},${height}`].join(' ');
+            chartArea.setAttribute('points', area);
+        }
+
+        function pushFeed(message, level = 'ok') {
+            const feed = metrics.feedList;
+            const item = document.createElement('div');
+            item.className = 'feed-item';
+
+            const time = new Date().toLocaleTimeString([], { hour12: false });
+            const lvlClass = level === 'bad' ? 'bad' : level === 'warn' ? 'warn' : 'ok';
+            item.innerHTML = `<span class="feed-time">[${time}]</span><span class="${lvlClass}">${message}</span>`;
+
+            feed.prepend(item);
+            if (feed.children.length > 10) {
+                feed.removeChild(feed.lastElementChild);
+            }
+        }
+
+        function refreshChart(nextValue) {
+            chartSeries.push(nextValue);
+            while (chartSeries.length > 12) {
+                chartSeries.shift();
+            }
+            renderChart();
+        }
+
+        function setSecureState() {
+            healthState = 'stable';
+            metrics.statusLabel.textContent = 'SYSTEM STABLE';
+            metrics.statusLabel.className = 'status-main healthy';
+            metrics.statusChip.textContent = 'SECURE STATE';
+            metrics.statusChip.className = 'status-chip healthy';
+            metrics.riskBar.style.width = '8%';
+            metrics.riskBar.className = 'bar ok';
+            metrics.riskScore.textContent = '8 / 100';
+            metrics.riskScore.style.color = '#a7f3d0';
+            metrics.availability.textContent = '99.999%';
+            metrics.opHealth.textContent = 'System health posture: Stable and resilient';
+            metrics.driftValue.textContent = 'Minimal';
+            metrics.mirrorLag.textContent = '4 ms';
+            metrics.etaValue.textContent = '0m 38s';
+            trendLabel.textContent = 'Stabilized';
+            pushFeed('Parity applied successfully. Full integrity restored.', 'ok');
+        }
+
+        function setRecoveryState() {
+            healthState = 'recovering';
+            metrics.statusLabel.textContent = 'RECOVERY IN PROGRESS';
+            metrics.statusLabel.className = 'status-main critical';
+            metrics.statusChip.textContent = 'HEALING';
+            metrics.statusChip.className = 'status-chip';
+            metrics.riskBar.style.width = '34%';
+            metrics.riskBar.className = 'bar caution';
+            metrics.riskScore.textContent = '34 / 100';
+            metrics.riskScore.style.color = '#fde68a';
+            metrics.availability.textContent = '99.95%';
+            metrics.opHealth.textContent = 'System health posture: Recovery pipeline active';
+            metrics.driftValue.textContent = 'Reducing';
+            metrics.mirrorLag.textContent = '9 ms';
+            metrics.etaValue.textContent = '1m 12s';
+            trendLabel.textContent = 'Recovering';
+        }
+
+        function syncButtons() {
+            healBtn.disabled = isHealing;
+            healBtnTop.disabled = isHealing;
+            if (isHealing) {
+                healBtn.textContent = 'RECONSTRUCTING PARITY...';
+                healBtnTop.textContent = 'Healing in progress';
+                healBtn.style.opacity = '0.55';
+                healBtnTop.style.opacity = '0.55';
+                return;
+            }
+            healBtn.textContent = mode === 'alert' ? 'INITIALIZE AUTONOMOUS HEALING' : 'REPAIR MESH NOW';
+            healBtnTop.textContent = 'Autonomous healing';
+            healBtn.style.opacity = '1';
+            healBtnTop.style.opacity = '1';
+        }
+
+        function appendTerminal(line, tone = '#f8fafc') {
+            const row = document.createElement('div');
+            row.textContent = line;
+            row.style.color = tone;
+            metrics.terminalLog.appendChild(row);
+            metrics.terminalLog.scrollTop = metrics.terminalLog.scrollHeight;
+        }
+
+        function healSystem() {
+            if (isHealing) {
+                return;
+            }
+            isHealing = true;
+            syncButtons();
+            setRecoveryState();
+            appendTerminal('> Repair pipeline started across mirrored nodes...', '#cbd5e1');
+            pushFeed('Recovery pipeline engaged across all active regions.', 'warn');
+
+            const repairSequence = [
+                '> Sampling parity from Dublin, Frankfurt, and Virginia...',
+                '> Rebuilding fragmented shards with deterministic checksum map...',
+                '> Applying tamper-proof key schedule and lockstep validation...',
+                '> Sealing restored clusters behind zero-trust gates...',
+            ];
+
+            repairSequence.forEach((line, index) => {
+                setTimeout(() => appendTerminal(line, index < 2 ? '#cbd5e1' : '#99f6e4'), 300 + index * 360);
+            });
+
+            setTimeout(() => {
+                const shards = document.querySelectorAll('.shard.risk');
+                shards.forEach((s) => s.className = 'shard ok');
+                appendTerminal('> SUCCESS: parity applied, integrity returned to nominal.', '#86efac');
+                setSecureState();
+                refreshChart(88);
+                isHealing = false;
+                syncButtons();
+                healBtn.style.background = 'linear-gradient(90deg, #059669, #10b981)';
+                healBtnTop.style.background = 'linear-gradient(90deg, #059669, #10b981)';
+                pushFeed('Autonomous healing completed. System restored to nominal.', 'ok');
+            }, 2500);
+        }
+
+        function launchDrill() {
+            healthState = 'drill';
+            pushFeed('Resilience drill started for mirrored shards.', 'warn');
+            appendTerminal('> Launching synthetic failure drill across shard clusters...', '#fde68a');
+            metrics.driftValue.textContent = 'Observed';
+            metrics.mirrorLag.textContent = '21 ms';
+            metrics.etaValue.textContent = '2m 05s';
+            trendLabel.textContent = 'Stress testing';
+            refreshChart(42);
+            setTimeout(() => {
+                appendTerminal('> Drill complete. No lasting corruption detected.', '#86efac');
+                if (healthState === 'drill') {
+                    healthState = 'stable';
+                }
+                metrics.driftValue.textContent = 'Low';
+                metrics.mirrorLag.textContent = '11 ms';
+                metrics.etaValue.textContent = '1m 43s';
+                refreshChart(58);
+            }, 1400);
+        }
+
+        function exportSnapshot() {
+            const snapshot = {
+                capturedAt: new Date().toISOString(),
+                version: '2.2.0',
+                status: metrics.statusLabel.textContent,
+                risk: metrics.riskScore.textContent,
+                availability: metrics.availability.textContent,
+                latency: metrics.latencyValue.textContent,
+                scan: metrics.scanValue.textContent,
+            };
+            const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'sentinel-snapshot.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            appendTerminal('> Snapshot exported for offline review.', '#cbd5e1');
+            pushFeed('Operator exported a JSON snapshot.', 'ok');
+        }
+
+        function toggleMode() {
+            mode = mode === 'alert' ? 'calm' : 'alert';
+            document.body.style.background = mode === 'alert'
+                ? 'radial-gradient(circle at 15% 10%, rgba(45, 212, 191, 0.2), transparent 30%), radial-gradient(circle at 90% 5%, rgba(56, 189, 248, 0.16), transparent 28%), linear-gradient(160deg, #050a19, #040813 60%, #030712)'
+                : 'radial-gradient(circle at 20% 15%, rgba(245, 158, 11, 0.14), transparent 24%), radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.12), transparent 22%), linear-gradient(160deg, #070b14, #050a19 60%, #020617)';
+            modeBtn.textContent = mode === 'alert' ? 'Stealth mode' : 'Alert mode';
+            healBtn.textContent = mode === 'alert' ? 'INITIALIZE AUTONOMOUS HEALING' : 'REPAIR MESH NOW';
+            appendTerminal(`> Interface theme switched to ${mode} mode.`, '#cbd5e1');
+        }
+
+        setInterval(() => {
+            const now = new Date();
+            metrics.clockPill.innerText = `UTC ${now.toUTCString().split(' ')[4]}`;
+
+            const criticalBase = healthState === 'stable' ? 12 : healthState === 'recovering' ? 34 : healthState === 'drill' ? 42 : 72;
+            const latency = (Math.random() * 0.7 + (healthState === 'stable' ? 2.2 : healthState === 'recovering' ? 3.0 : 3.2)).toFixed(2);
+            const scan = (Math.random() * 6 + (healthState === 'stable' ? 68 : healthState === 'recovering' ? 63 : 61)).toFixed(1);
+            const sync = (Math.random() * 0.4 + 1.6).toFixed(2);
+            const risk = Math.max(6, Math.min(72, Math.round(criticalBase + (Math.random() * 4 - 2))));
+            const availability = healthState === 'stable'
+                ? 99.999 + Math.random() * 0.0004
+                : healthState === 'recovering'
+                    ? 99.95 + Math.random() * 0.01
+                    : healthState === 'drill'
+                        ? 99.97 + Math.random() * 0.004
+                        : 99.92 + Math.random() * 0.01;
+
+            metrics.latencyValue.innerText = `${latency} ms`;
+            metrics.scanValue.innerText = `${scan}k/s`;
+            metrics.opSync.innerText = `Sync throughput: ${sync} TB/s`;
+            metrics.riskScore.innerText = `${risk} / 100`;
+            metrics.availability.innerText = `${availability.toFixed(3)}%`;
+
+            if (!isHealing) {
+                metrics.riskBar.style.width = `${Math.max(6, risk)}%`;
+                metrics.riskBar.className = risk < 24 ? 'bar ok' : risk < 48 ? 'bar caution' : 'bar';
+                metrics.driftValue.textContent = healthState === 'stable' ? 'Minimal' : risk < 48 ? 'Traced' : 'High';
+                metrics.mirrorLag.textContent = `${Math.round(latency * 3.2)} ms`;
+                metrics.etaValue.textContent = healthState === 'stable' ? '0m 28s' : risk < 48 ? '1m 14s' : '2m 04s';
+            }
+
+            refreshChart(risk);
+
+            if (Math.random() > 0.72) {
+                const states = [
+                    ['Mirror heartbeat confirmed from Frankfurt.', 'ok'],
+                    ['A stale node rotated out of quorum.', 'warn'],
+                    ['Parity anchor refreshed in Dublin.', 'ok'],
+                ];
+                const [message, level] = states[Math.floor(Math.random() * states.length)];
+                pushFeed(message, level);
+            }
+        }, 1300);
+
+        renderChart();
+        syncButtons();
+        appendTerminal('> Enhanced mission controls online.', '#99f6e4');
+    </script>
+</body>
+</html>

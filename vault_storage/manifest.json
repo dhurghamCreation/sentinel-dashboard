@@ -1,0 +1,16 @@
+{
+    "file_name": "my_secret.txt",
+    "total_shards": 10,
+    "hashes": {
+        "shard_0.dat": "b3d4b3d8ba72a6ca943f5a704b6c871f405140018889db7fc4b5115f72632d0e",
+        "shard_1.dat": "78dff05d6dbd396f7614500b60974540fbdb8036c85c0a78e0bc79f993a27bd8",
+        "shard_2.dat": "e13de1432e5d2fbfbfc439e1374763d516b875249209714eda7c0f40a41f348e",
+        "shard_3.dat": "e1dd935f270e5084f30696d1def28f651127e6eec6b570a73a236da5d79fdcdf",
+        "shard_4.dat": "8bf1afd620d59fcb8df72443f52a7449aa59d48b61021222a1dc7a326e66bd00",
+        "shard_5.dat": "83aaea302bfcbb4086092e83c0458a251aa2cedeb3d3273332673d7115d273c5",
+        "shard_6.dat": "c7687c08b4b1637eae4ba2c9c3dd9ed60473a6f758464fab543b7f476b7b39ce",
+        "shard_7.dat": "9a7b3813519da91e0e8119d7199ccdade65061f28befea33462d995459e5a145",
+        "shard_8.dat": "447c50045beb9bac825b0f7bdd8b7b70a770c79e0984efd3665cf97687b69ef0",
+        "shard_9.dat": "a8b333827a14ca72916436ce3005cbb18da52e11b3d5e03980a2adda52c2f98c"
+    }
+}

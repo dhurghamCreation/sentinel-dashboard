@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TITAN-GATE | Neural Overlord Suite</title>
+    <style>
+        :root { 
+            --bg: #00020a; --panel: rgba(10, 15, 30, 0.7); --accent: #00f2ff; 
+            --accent-glow: rgba(0, 242, 255, 0.4); --danger: #ff004c; --success: #00ff95;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; background: var(--bg); color: #e2e8f0; 
+            font-family: 'Inter', system-ui, sans-serif; height: 100vh; overflow: hidden;
+            background-image: radial-gradient(circle at 50% -20%, #002d40, transparent);
+        }
+
+        /* Responsive Layout Engine */
+        .app-container { display: flex; height: 100vh; width: 100vw; position: relative; }
+        
+        /* Brilliant Sidebar (Hidden on Mobile, Docked on Desktop) */
+        .sidebar { 
+            width: 280px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0,242,255,0.1); display: flex; flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+        }
+
+        /* Mobile Dock (Shown only on small screens) */
+        .mobile-nav { 
+            display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px);
+            padding: 12px 25px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1);
+            gap: 25px; z-index: 2000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        /* The Viewport */
+        .main-view { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
+        
+        /* Top Header Area */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; margin-top: 10px; }
+        .logo { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+
+        /* Bento Grid - Brilliant & Adaptive */
+        .bento-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px; width: 100%;
+        }
+
+        .card { 
+            background: var(--panel); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px; padding: 20px; position: relative; overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .card:active { transform: scale(0.98); }
+        .card-large { grid-column: span 2; }
+        
+        /* HUD Indicators */
+        .label { font-size: 0.65rem; color: #64748b; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+        .value { font-size: 1.8rem; font-weight: 900; margin-top: 8px; font-family: 'JetBrains Mono', monospace; }
+
+        /* Neural Shard Matrix (Brilliant Visuals) */
+        .shard-matrix { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(15px, 1fr)); 
+            gap: 6px; margin-top: 15px; 
+        }
+        .shard { aspect-ratio: 1; border-radius: 3px; background: #1e293b; transition: 0.3s; }
+        .shard.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .shard.pulse { background: var(--accent); animation: pulse-anim 2s infinite; }
+        .shard.fail { background: var(--danger); animation: flicker 0.6s infinite; }
+
+        /* Mega Action Button */
+        .action-btn { 
+            background: linear-gradient(135deg, #00f2ff, #0066ff); color: #000;
+            border: none; width: 100%; padding: 18px; border-radius: 15px;
+            font-weight: 900; font-size: 1rem; margin-top: 20px; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 242, 255, 0.2);
+        }
+
+        /* Terminal Console */
+        .terminal { 
+            background: #000; color: var(--success); font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem; padding: 15px; border-radius: 12px; height: 180px;
+            overflow-y: auto; border: 1px solid #1e293b; margin-top: 20px;
+        }
+
+        /* Animations */
+        @keyframes pulse-anim { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes flicker { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 0.9; } }
+
+        /* Tablet/Mobile Overrides */
+        @media (max-width: 850px) {
+            .sidebar { display: none; }
+            .mobile-nav { display: flex; }
+            .card-large { grid-column: span 1; }
+            .main-view { padding: 15px; }
+            .logo { font-size: 1rem; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div style="padding: 30px;" class="logo">TITAN GATE</div>
+            <div style="padding: 20px; color: #475569; font-size: 0.7rem; font-weight: bold;">SQUADRON COMMAND</div>
+            <div style="padding: 10px 30px; color: var(--accent);">● Overview</div>
+            <div style="padding: 10px 30px; opacity: 0.5;">● Neural Shards</div>
+            <div style="padding: 10px 30px; opacity: 0.5;">● Vault Access</div>
+            <div style="padding: 10px 30px; opacity: 0.5;">● System Logs</div>
+        </div>
+
+        <div class="main-view">
+            <div class="header">
+                <div>
+                    <div class="label">Primary Node</div>
+                    <div style="font-weight: bold; font-size: 0.9rem;">DHURGHAM_TITAN_X</div>
+                </div>
+                <div class="logo">V 4.0 PRO</div>
+            </div>
+
+            <div class="bento-grid">
+                <div class="card">
+                    <div class="label">Vault Integrity</div>
+                    <div class="value" id="healthText" style="color:var(--danger)">91%</div>
+                </div>
+                <div class="card">
+                    <div class="label">Sync Rate</div>
+                    <div class="value" id="syncRate">1.8 TB/s</div>
+                </div>
+                <div class="card card-large">
+                    <div class="label">Neural Shard Map (Real-Time)</div>
+                    <div class="shard-matrix" id="matrix"></div>
+                </div>
+                <div class="card">
+                    <div class="label">Active Threats</div>
+                    <div class="value" style="color:var(--warning)">02</div>
+                </div>
+                <div class="card">
+                    <div class="label">Uptime</div>
+                    <div class="value">99.9%</div>
+                </div>
+            </div>
+
+            <div class="terminal" id="console">
+                <div>> Booting Titan-Gate OS...</div>
+                <div>> Authenticating User: Dhurgham... Success.</div>
+                <div style="color: var(--danger)">> CRITICAL: Node 47 corruption detected.</div>
+                <div>> Awaiting manual override command...</div>
+            </div>
+
+            <button class="action-btn" onclick="executeTitan()">ENGAGE NEURAL RECON</button>
+        </div>
+
+        <div class="mobile-nav">
+            <span>📊</span>
+            <span>🛡️</span>
+            <span>⚡</span>
+            <span>⚙️</span>
+        </div>
+    </div>
+
+    <script>
+        // Build the brilliant shard matrix
+        const matrix = document.getElementById('matrix');
+        const shardCount = window.innerWidth < 600 ? 40 : 100;
+        for(let i=0; i < shardCount; i++) {
+            const s = document.createElement('div');
+            s.className = 'shard online';
+            if(i === 47) s.className = 'shard fail';
+            if(i % 12 === 0) s.className = 'shard pulse';
+            matrix.appendChild(s);
+        }
+
+        // Live Telemetry
+        setInterval(() => {
+            document.getElementById('syncRate').innerText = (Math.random() * 0.4 + 1.6).toFixed(2) + " TB/s";
+        }, 2000);
+
+        function executeTitan() {
+            const btn = document.querySelector('.action-btn');
+            const con = document.getElementById('console');
+            const health = document.getElementById('healthText');
+            
+            btn.innerText = "OVERRIDING...";
+            btn.style.opacity = "0.6";
+            
+            const logs = [
+                "> Analyzing parity signatures...",
+                "> Locking quantum encryption keys...",
+                "> Re-sharding corrupted clusters...",
+                "> Synchronization complete.",
+                "> SYSTEM STATUS: SOVEREIGN."
+            ];
+
+            let i = 0;
+            const timer = setInterval(() => {
+                const line = document.createElement('div');
+                line.innerText = logs[i];
+                if(i === 4) line.style.color = 'var(--success)';
+                con.appendChild(line);
+                con.scrollTop = con.scrollHeight;
+                i++;
+                if(i === logs.length) {
+                    clearInterval(timer);
+                    health.innerText = "100%";
+                    health.style.color = "var(--success)";
+                    btn.innerText = "RESTORED";
+                    btn.style.background = "var(--success)";
+                    document.querySelector('.fail').className = 'shard online';
+                }
+            }, 800);
+        }
+    </script>
+</body>
+</html>

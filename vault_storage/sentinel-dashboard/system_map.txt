@@ -1,0 +1,17 @@
+﻿SYSTEM ARCHITECTURE: SENTINEL-ARCHIVE UNIVERSAL
+===============================================
+
+1. DETECTION LAYER (C#): 
+   Monitors OS file events. When a file is dropped, it triggers the sharding process.
+
+2. MATH CORE (Python): 
+   Takes raw binary data, creates N shards, and generates a SHA-256 Manifest.
+
+3. INTEGRITY SENTINEL (Rust/PowerShell): 
+   Periodically scans shards. If Live_Hash != Manifest_Hash, it flags 'CRITICAL CORRUPTION'.
+
+4. RECOVERY ENGINE (Python): 
+   Uses the Manifest to identify and 'heal' corrupted shards.
+
+5. UNIVERSAL UI (React/Tailwind): 
+   Provides a high-end dashboard for Mobile/Desktop to visualize system health.

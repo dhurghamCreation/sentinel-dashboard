@@ -1,0 +1,1875 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sentinel Archive — Universal Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&family=Source+Code+Pro:wght@500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1b1e24;--sf:#22262e;--el:#2a2f38;--cd:#262b33;--cdh:#2d323c;
+  --in:#1e2229;--sb:#1a1d23;--br:#3a3f4a;--bl:#444956;--bi:#3d4250;
+  --tx:#d6dae0;--ts:#9ca3af;--td:#6b7280;--ac:#2b8cbe;--ach:#3498db;
+  --gr:#27ae60;--rd:#c0392b;--yw:#d4a017;--pu:#7d3c98;
+  --font:'Source Sans Pro','Segoe UI',Tahoma,sans-serif;
+  --mono:'Source Code Pro',Consolas,'Courier New',monospace;
+  --sw:230px;--scw:52px;--hh:46px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;line-height:1.5;-webkit-overflow-scrolling:touch}
+::selection{background:var(--ac);color:#fff}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#444}
+::-webkit-scrollbar-thumb:hover{background:#555}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sb{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--sb);border-right:1px solid var(--br);z-index:100;display:flex;flex-direction:column;overflow:hidden;transition:width 0.15s}
+.sb.clps{width:var(--scw)}
+.sbh{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--br);min-height:var(--hh);flex-shrink:0}
+.sbl{width:28px;height:28px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0}
+.sbt{font-weight:700;font-size:.85rem;white-space:nowrap;overflow:hidden;color:var(--tx)}
+.sb.clps .sbt,.sb.clps .sl,.sb.clps .nl,.sb.clps .ft{opacity:0;width:0;display:none}
+.sbtg{margin-left:auto;background:var(--el);border:1px solid var(--br);color:var(--ts);width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;flex-shrink:0}
+.sbtg:hover{background:var(--br)}
+.sbn{flex:1;overflow-y:auto;padding:6px;-webkit-overflow-scrolling:touch}
+.sl{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--td);padding:8px 8px 2px;font-weight:700;white-space:nowrap;overflow:hidden}
+.ni{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;color:var(--ts);white-space:nowrap;font-size:.8rem;font-weight:600;border:1px solid transparent}
+.ni:hover{background:var(--el);color:var(--tx);border-color:var(--br)}
+.ni.act{background:var(--el);color:var(--ac);border-color:var(--ac)}
+.nic{font-size:1rem;flex-shrink:0;width:18px;text-align:center}
+.nb{margin-left:auto;background:var(--rd);color:#fff;font-size:.6rem;font-weight:700;padding:1px 5px;min-width:18px;text-align:center;border-radius:8px}
+.sbf{padding:6px;border-top:1px solid var(--br);flex-shrink:0}
+.ft{font-size:.65rem;color:var(--td);text-align:center;white-space:nowrap;overflow:hidden}
+
+/* MAIN */
+.ma{margin-left:var(--sw);flex:1;transition:margin-left 0.15s;display:flex;flex-direction:column;min-height:100vh}
+.ma.exp{margin-left:var(--scw)}
+
+/* HEADER */
+.th{display:flex;align-items:center;gap:10px;padding:6px 16px;background:var(--sf);border-bottom:1px solid var(--br);min-height:var(--hh)}
+.thl{display:flex;align-items:center;gap:10px;flex:1}
+.bc{font-size:.75rem;color:var(--td)}
+.bc span{color:var(--ts)}
+.thr{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.tb{background:var(--el);border:1px solid var(--br);color:var(--ts);padding:4px 10px;font-size:.75rem;cursor:pointer;font-weight:600}
+.tb:hover{background:var(--br);color:var(--tx)}
+.tb.p{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:700}
+.tb.p:hover{background:var(--ach)}
+.sb2{display:flex;align-items:center;background:var(--in);border:1px solid var(--bi);padding:0 8px;gap:6px}
+.sb2:focus-within{border-color:var(--ac)}
+.sb2 input{background:none;border:none;outline:none;color:var(--tx);font-size:.78rem;padding:4px 0;width:130px}
+.sb2 input::placeholder{color:var(--td)}
+
+/* PAGE */
+.pw{padding:14px 18px;flex:1}
+.pg{display:none}.pg.act{display:block}
+
+/* WIDGETS */
+.wg{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:10px}
+.w{background:var(--cd);border:1px solid var(--br);padding:14px}
+.w:hover{background:var(--cdh)}
+.w.c3{grid-column:span 3}.w.c4{grid-column:span 4}.w.c5{grid-column:span 5}.w.c6{grid-column:span 6}.w.c7{grid-column:span 7}.w.c8{grid-column:span 8}.w.c12{grid-column:span 12}
+.wt{font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;color:var(--td);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.wt .bd{margin-left:auto;font-size:.6rem;padding:1px 6px;background:var(--el);color:var(--ts);border:1px solid var(--br);font-weight:700}
+.wv{font-weight:900;font-size:1.8rem;line-height:1.1;color:var(--tx)}
+.ws{font-size:.75rem;color:var(--ts);margin-top:2px}
+.wtr{display:inline-block;font-size:.7rem;font-weight:700;margin-top:6px;padding:1px 6px;border:1px solid var(--br)}
+.wtr.up{color:var(--gr);border-color:var(--gr)}.wtr.dn{color:var(--rd);border-color:var(--rd)}.wtr.nt{color:var(--td);border-color:var(--br)}
+
+/* STATUS */
+.sd{display:inline-block;width:7px;height:7px;margin-right:4px;vertical-align:middle}
+.sd.g{background:var(--gr)}.sd.y{background:var(--yw)}.sd.r{background:var(--rd)}.sd.b{background:var(--ac)}
+.sd.blk{animation:blk 1.2s step-start infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* CHART */
+.cx{width:100%;height:120px;margin-top:6px}.cx svg{width:100%;height:100%}
+
+/* SHARD MATRIX */
+.sg{display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin-top:6px}
+.sc{aspect-ratio:1;background:var(--el);border:1px solid var(--br);cursor:pointer;min-width:6px;min-height:6px}
+.sc:hover{background:var(--bl)}.sc.ok{background:var(--gr);border-color:var(--gr)}
+.sc.wn{background:var(--yw);border-color:var(--yw)}.sc.er{background:var(--rd);border-color:var(--rd);animation:fr 1s step-start infinite}
+.sc.bd{background:var(--ac);border-color:var(--ac);animation:fb .8s step-start infinite}
+@keyframes fr{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fb{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* FEED */
+.fl{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto}
+.fi{display:flex;align-items:flex-start;gap:6px;padding:6px 8px;background:var(--in);border:1px solid var(--br);font-size:.75rem}
+.ftm{font-family:var(--mono);font-size:.68rem;color:var(--td);white-space:nowrap;flex-shrink:0}
+.fm{flex:1;line-height:1.35}.fm.ok{color:var(--gr)}.fm.wn{color:var(--yw)}.fm.bd{color:var(--rd)}.fm.in{color:var(--ac)}
+
+/* TERMINAL */
+.tb2{background:#0a0c10;border:1px solid var(--br);padding:10px;font-family:var(--mono);font-size:.7rem;line-height:1.5;max-height:160px;overflow-y:auto;color:var(--gr)}
+.tb2 .pr{color:var(--yw)}.tb2 .er{color:var(--rd)}.tb2 .if{color:var(--ac)}
+
+/* TABLE */
+.dt{width:100%;border-collapse:collapse;font-size:.78rem}
+.dt th{text-align:left;padding:8px 10px;font-weight:700;color:var(--td);text-transform:uppercase;font-size:.65rem;letter-spacing:.5px;border-bottom:1px solid var(--br);background:var(--sf)}
+.dt td{padding:8px 10px;border-bottom:1px solid var(--br);color:var(--ts)}
+.dt tr:hover td{background:var(--el)}
+.dt .pl{display:inline-block;padding:1px 8px;font-size:.65rem;font-weight:700;border:1px solid}
+.dt .pl.gr{color:var(--gr);border-color:var(--gr)}.dt .pl.yw{color:var(--yw);border-color:var(--yw)}
+.dt .pl.rd{color:var(--rd);border-color:var(--rd)}.dt .pl.bl{color:var(--ac);border-color:var(--ac)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border:1px solid var(--br);background:var(--el);color:var(--tx);font-size:.75rem;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--br)}
+.btn.p{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:700}
+.btn.p:hover{background:var(--ach)}
+.btn.r{background:transparent;color:var(--rd);border-color:var(--rd)}
+.btn.r:hover{background:rgba(192,57,43,0.15)}
+.btn.s{padding:3px 8px;font-size:.7rem}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* PROGRESS */
+.prg{height:6px;background:var(--el);overflow:hidden;margin:3px 0;border:1px solid var(--br)}
+.prg .fl{height:100%;transition:width .4s}
+.prg .fl.gr{background:var(--gr)}.prg .fl.yw{background:var(--yw)}.prg .fl.rd{background:var(--rd)}.prg .fl.bl{background:var(--ac)}
+
+/* STAT ROW */
+.sr{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:6px}
+.sm{padding:8px;background:var(--in);border:1px solid var(--br)}
+.sm .sl2{font-size:.6rem;text-transform:uppercase;color:var(--td);font-weight:700}
+.sm .sv{font-size:1rem;font-weight:900;margin-top:1px}
+
+/* SETTINGS */
+.sg2{margin-bottom:24px}
+.sgt{font-size:.95rem;font-weight:700;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--br)}
+.sr2{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--in);border:1px solid var(--br);margin-bottom:4px}
+.srl{font-size:.8rem;font-weight:600}
+.srd{font-size:.7rem;color:var(--td);margin-top:1px}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px}
+.to{padding:8px;border:2px solid var(--br);text-align:center;cursor:pointer;font-size:.7rem;font-weight:600;background:var(--cd)}
+.to:hover{border-color:var(--ts)}.to.act{border-color:var(--ac);background:var(--el)}
+.tsw{width:20px;height:20px;margin:0 auto 4px;border:1px solid var(--br)}
+
+/* TOGGLE */
+.tg2{position:relative;width:38px;height:20px;background:var(--el);cursor:pointer;border:1px solid var(--br);flex-shrink:0}
+.tg2.on{background:var(--ac);border-color:var(--ac)}
+.tg2::after{content:'';position:absolute;top:1px;left:1px;width:16px;height:16px;background:#ccc;transition:left .15s}
+.tg2.on::after{left:19px;background:#fff}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center}
+.mo.op{display:flex}
+.mo2{background:var(--sf);border:1px solid var(--br);padding:20px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto}
+.mt2{font-size:1rem;font-weight:700;margin-bottom:14px}
+.mc{float:right;background:var(--el);border:1px solid var(--br);color:var(--ts);font-size:.9rem;cursor:pointer;padding:2px 6px;line-height:1}
+
+/* TOAST */
+.tw{position:fixed;top:10px;right:10px;z-index:300;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.ts2{padding:8px 14px;background:var(--sf);border:1px solid var(--br);font-size:.78rem;display:flex;align-items:center;gap:8px;max-width:340px;pointer-events:auto}
+.ts2.rm{opacity:0;transition:opacity .2s}
+.tsi{font-weight:700;font-size:.85rem}
+.ts2.su .tsi{color:var(--gr)}.ts2.er .tsi{color:var(--rd)}.ts2.wa .tsi{color:var(--yw)}.ts2.in .tsi{color:var(--ac)}
+
+/* FORM */
+input[type="text"],input[type="number"],input[type="password"],select,textarea{background:var(--in);border:1px solid var(--bi);color:var(--tx);padding:6px 10px;font-size:.78rem;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+
+/* NETWORK - CLEAN DARK WORLD MAP */
+.nm{position:relative;width:100%;height:480px;background:#0a0c10;border:1px solid var(--br);overflow:hidden;border-radius:8px;cursor:default}
+.nn{position:absolute;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);cursor:pointer;z-index:5;transition:all .25s ease}
+.nn:hover{width:20px;height:20px;z-index:10;filter:brightness(1.4)}
+.nn.mj{width:18px;height:18px}
+.nn.hb{width:30px;height:30px}
+.nn .nl2{position:absolute;left:26px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:.7rem;color:#ccc;pointer-events:none;opacity:0;transition:opacity .2s;text-shadow:0 0 8px rgba(0,0,0,.9);z-index:10;background:rgba(5,10,20,.9);padding:3px 8px;border:1px solid #555;border-radius:3px;font-weight:600}
+.nn:hover .nl2{opacity:1}
+.nn .nl2 .ns{display:block;font-size:.55rem;color:#888;font-weight:400}
+.nln{position:absolute;height:1px;background:rgba(120,120,120,.2);transform-origin:left center;pointer-events:none;z-index:3}
+.nln.act{background:rgba(200,200,200,.35);height:1px}
+.nln.high{background:rgba(255,100,100,.35);height:2px}
+
+/* Node stats bar */
+.nm .nsb{position:absolute;bottom:6px;left:8px;right:8px;z-index:7;display:flex;gap:8px;justify-content:center;pointer-events:none}
+.nm .nsb span{font-size:.5rem;padding:2px 6px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:3px;color:#666;font-family:var(--mono);pointer-events:auto}
+.nm .nsb span strong{color:#999;margin-left:2px}
+
+/* TIMELINE */
+.tl{position:relative;padding-left:20px}
+.tl::before{content:'';position:absolute;left:7px;top:4px;bottom:4px;width:1px;background:var(--br)}
+.tli{position:relative;padding-bottom:12px}
+.tli::before{content:'';position:absolute;left:-14px;top:5px;width:6px;height:6px;background:var(--ac)}
+.tli.wn::before{background:var(--yw)}.tli.er::before{background:var(--rd)}
+.tlt{font-size:.65rem;color:var(--td);font-family:var(--mono)}
+.tltt{font-size:.78rem;color:var(--ts)}
+
+/* CARD ROW */
+.ctr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.w.c3{grid-column:span 4}.w.c5{grid-column:span 6}}
+@media(max-width:850px){
+  .w.c3,.w.c4,.w.c5,.w.c6{grid-column:span 12}
+  .sb{width:var(--scw)}.sb .sbt,.sb .sl,.sb .nl,.sb .ft{opacity:0;width:0;display:none}
+  .ma{margin-left:var(--scw)}.th{padding:6px 10px;flex-wrap:wrap}.pw{padding:12px}.sb2{display:none}
+  .thr{gap:4px;width:100%;justify-content:flex-end;margin-top:4px}
+  .tb{padding:3px 7px;font-size:.7rem}
+  .wv{font-size:1.4rem}
+  .sg{grid-template-columns:repeat(12,1fr)}
+  .nm{height:200px}
+}
+@media(max-width:550px){
+  .sb{width:0;border-right:none}.ma{margin-left:0}.wg{gap:6px}.w{padding:8px}.wv{font-size:1.2rem}
+  .th{padding:4px 8px;flex-wrap:wrap;gap:4px}
+  .thr{gap:3px}
+  .tb{padding:2px 6px;font-size:.65rem}
+  .pw{padding:8px}
+  .sg{grid-template-columns:repeat(8,1fr);gap:2px}
+  .sr{grid-template-columns:repeat(2,1fr)}
+  .tb2{max-height:120px;font-size:.65rem}
+  .fl{max-height:160px}
+  .dt{font-size:.7rem}
+  .dt th,.dt td{padding:4px 6px}
+  .calc-grid{gap:3px}
+  .calc-btn{padding:6px;font-size:.8rem}
+  .cx{height:80px}
+  .tw{top:6px;right:6px;left:6px}
+  .ts2{max-width:100%;font-size:.72rem}
+  .mo2{padding:14px;max-width:95%}
+  .nm{height:160px}
+  .thl{gap:4px}
+  .bc{font-size:.65rem}
+  .sb2{display:none}
+}
+
+/* UTILITY */
+.flex{display:flex}.aic{align-items:center}.jcsb{justify-content:space-between}.g2{gap:6px}.g3{gap:10px}.mt1{margin-top:4px}.mt2{margin-top:8px}.mt3{margin-top:12px}.mb2{margin-bottom:8px}.mb3{margin-bottom:12px}
+.td{color:var(--td)}.tsm{font-size:.75rem}.fw7{font-weight:700}.w-full{width:100%}
+
+/* ===== NEW: Notes, Todo, Calculator, Help sections ===== */
+.notes-area{display:flex;flex-direction:column;gap:8px}
+.notes-area textarea{width:100%;min-height:120px;resize:vertical;font-family:var(--mono);font-size:.78rem}
+.notes-toolbar{display:flex;gap:6px;flex-wrap:wrap}
+
+.todo-list{display:flex;flex-direction:column;gap:4px}
+.todo-item{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--in);border:1px solid var(--br);font-size:.78rem}
+.todo-item input[type="checkbox"]{width:14px;height:14px;cursor:pointer}
+.todo-item.done .todo-text{text-decoration:line-through;color:var(--td)}
+.todo-text{flex:1}
+.todo-del{background:none;border:none;color:var(--rd);cursor:pointer;font-weight:700;font-size:.8rem}
+
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}
+.calc-btn{padding:10px;border:1px solid var(--br);background:var(--el);color:var(--tx);font-size:.9rem;font-weight:700;cursor:pointer;text-align:center}
+.calc-btn:hover{background:var(--br)}
+.calc-btn.op{background:var(--ac);color:#fff;border-color:var(--ac)}
+.calc-btn.eq{background:var(--gr);color:#fff;border-color:var(--gr)}
+.calc-btn.clr{background:var(--rd);color:#fff;border-color:var(--rd)}
+.calc-display{background:var(--in);border:1px solid var(--bi);padding:10px 12px;font-family:var(--mono);font-size:1.2rem;text-align:right;margin-bottom:4px;min-height:40px}
+
+.help-section{border:1px solid var(--br);padding:14px;background:var(--cd);margin-bottom:8px}
+.help-section h3{font-size:.95rem;font-weight:700;margin-bottom:6px;color:var(--ac)}
+.help-section ul{list-style:none;padding:0}
+.help-section li{padding:4px 0;font-size:.78rem;border-bottom:1px solid var(--br);display:flex;gap:6px}
+.help-section li:last-child{border-bottom:none}
+.help-section li strong{color:var(--ts);min-width:130px}
+.help-section li span{color:var(--td)}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sb" id="sidebar">
+    <div class="sbh">
+      <div class="sbl">S</div>
+      <span class="sbt">Sentinel Archive</span>
+      <button class="sbtg" id="sidebarToggle">&laquo;</button>
+    </div>
+    <nav class="sbn" id="sidebarNav">
+      <div class="sl">Overview</div>
+      <div class="ni act" data-pg="dashboard" onclick="sw('dashboard')"><span class="nic">[=]</span><span class="nl">Dashboard</span></div>
+      <div class="ni" data-pg="shards" onclick="sw('shards')"><span class="nic">[#]</span><span class="nl">Shard Explorer</span><span class="nb" id="shardBadge">2</span></div>
+      <div class="ni" data-pg="network" onclick="sw('network')"><span class="nic">[O]</span><span class="nl">Network</span></div>
+      <div class="ni" data-pg="logs" onclick="sw('logs')"><span class="nic">[L]</span><span class="nl">Logs & Audit</span></div>
+      <div class="sl">Tools</div>
+      <div class="ni" data-pg="notes" onclick="sw('notes')"><span class="nic">[N]</span><span class="nl">Notes</span></div>
+      <div class="ni" data-pg="todo" onclick="sw('todo')"><span class="nic">[T]</span><span class="nl">To-Do List</span></div>
+      <div class="ni" data-pg="calc" onclick="sw('calc')"><span class="nic">[C]</span><span class="nl">Calculator</span></div>
+      <div class="sl">System</div>
+      <div class="ni" data-pg="alerts" onclick="sw('alerts')"><span class="nic">[!]</span><span class="nl">Alerts</span><span class="nb" id="alertBadge">5</span></div>
+      <div class="ni" data-pg="backup" onclick="sw('backup')"><span class="nic">[+]</span><span class="nl">Backup</span></div>
+      <div class="ni" data-pg="terminal" onclick="sw('terminal')"><span class="nic">[T]</span><span class="nl">Terminal</span></div>
+      <div class="ni" data-pg="files" onclick="sw('files')"><span class="nic">[F]</span><span class="nl">Files</span></div>
+      <div class="ni" data-pg="reports" onclick="sw('reports')"><span class="nic">[R]</span><span class="nl">Reports</span></div>
+      <div class="ni" data-pg="api" onclick="sw('api')"><span class="nic">[A]</span><span class="nl">API Console</span></div>
+      <div class="ni" data-pg="help" onclick="sw('help')"><span class="nic">[?]</span><span class="nl">Help & About</span></div>
+      <div class="ni" data-pg="settings" onclick="sw('settings')"><span class="nic">[*]</span><span class="nl">Settings</span></div>
+    </nav>
+    <div class="sbf"><div class="ft">v3.1.0</div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="ma" id="mainArea">
+    <!-- HEADER -->
+    <header class="th">
+      <div class="thl">
+        <div class="sb2"><span>&#128269;</span><input type="text" placeholder="Search..." id="globalSearch" oninput="handleSearch(this.value)"></div>
+        <div class="bc" id="breadcrumb">/ <span>Dashboard</span></div>
+      </div>
+      <div class="thr">
+        <button class="tb" onclick="toggleTheme()">Theme</button>
+        <button class="tb" onclick="launchDrill()">Drill</button>
+        <button class="tb p" onclick="healSystem()">Heal</button>
+        <button class="tb" onclick="exportSnapshot()">Export</button>
+        <button class="tb" id="clockDisplay" style="font-family:var(--mono);font-size:.75rem;font-weight:700;">00:00:00</button>
+      </div>
+    </header>
+
+    <div class="pw">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="pg act" id="pg-dashboard">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+        <h2 style="font-weight:900;font-size:1.2rem;">Command Dashboard</h2>
+        <span style="font-size:.75rem;color:var(--td);" id="dashStatus"><span class="sd g blk"></span> All systems operational</span>
+        <span style="margin-left:auto;font-size:.75rem;color:var(--td);">Uptime: <strong id="uptimeDisplay" style="color:var(--tx);">0d 0h 0m</strong></span>
+      </div>
+      <div class="wg">
+        <div class="w c3"><div class="wt">Protected Capacity</div><div class="wv">12.8 PB</div><div class="ws">+4.8% over 7 days</div><div class="wtr up">+4.8%</div></div>
+        <div class="w c3"><div class="wt">Cross-Region Latency</div><div class="wv" id="metricLatency">3.9 ms</div><div class="ws">Optimized mirror route</div><div class="wtr up">-0.3ms</div></div>
+        <div class="w c3"><div class="wt">Active Clusters</div><div class="wv">1,408</div><div class="ws">22 nodes joined</div><div class="wtr up">+22</div></div>
+        <div class="w c3"><div class="wt">Threat Scan Rate</div><div class="wv" id="metricScan">64.2k/s</div><div class="ws">Real-time heuristics</div><div class="wtr nt">stable</div></div>
+      </div>
+      <div class="wg">
+        <div class="w c7">
+          <div class="ctr"><div class="wt">Global Integrity <span class="bd" id="integrityBadge">THREAT DETECTED</span></div>
+          <div class="flex g2"><button class="btn s" onclick="toggleMode()" id="modeToggleBtn">Stealth</button><button class="btn s p" onclick="healSystem()">Heal</button></div></div>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;">
+            <div style="font-size:2rem;font-weight:900;" id="integrityStatus">THREAT DETECTED</div>
+            <div style="font-size:.78rem;color:var(--td);"><span class="sd r blk" id="integrityDot"></span>Risk: <strong id="riskScoreDisplay">72/100</strong></div>
+          </div>
+          <div class="prg mt1"><div class="fl rd" id="riskBarFill" style="width:72%"></div></div>
+          <div class="sr">
+            <div class="sm"><div class="sl2">Recovery SLA</div><div class="sv" id="slaDisplay">2m 21s</div></div>
+            <div class="sm"><div class="sl2">Availability</div><div class="sv" id="availDisplay">99.92%</div></div>
+            <div class="sm"><div class="sl2">Drift</div><div class="sv" id="driftDisplay">High</div></div>
+            <div class="sm"><div class="sl2">Mirror Lag</div><div class="sv" id="lagDisplay">18ms</div></div>
+          </div>
+          <div class="cx"><svg viewBox="0 0 600 120" preserveAspectRatio="none"><defs><linearGradient id="tg" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#c0392b"/><stop offset="50%" stop-color="#d4a017"/><stop offset="100%" stop-color="#27ae60"/></linearGradient></defs><polygon id="trendArea" points="" fill="rgba(39,174,96,0.08)"/><polyline id="trendLine" points="" fill="none" stroke="url(#tg)" stroke-width="2.5"/></svg></div>
+        </div>
+        <div class="w c5"><div class="wt">Live Incident Feed</div>
+          <div class="fl" id="feedList">
+            <div class="fi"><span class="ftm">[14:02:01]</span><span class="fm ok">Shard_4 checksum confirmed.</span></div>
+            <div class="fi"><span class="ftm">[14:02:05]</span><span class="fm bd">Integrity drift in alpha-0.</span></div>
+            <div class="fi"><span class="ftm">[14:02:06]</span><span class="fm wn">Parity stream requested.</span></div>
+            <div class="fi"><span class="ftm">[14:02:10]</span><span class="fm ok">Recovery window established.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="wg">
+        <div class="w c8">
+          <div class="ctr"><div class="wt">Shard Matrix <span class="bd">96 shards</span></div>
+          <div class="flex g2"><button class="btn s" onclick="randomizeShards()">Randomize</button><button class="btn s" onclick="healShards()">Repair</button></div></div>
+          <div class="sg" id="shardMatrix"></div>
+          <div class="sr">
+            <div class="sm"><div class="sl2">CPU</div><div style="display:flex;align-items:center;gap:6px;"><div class="prg" style="flex:1"><div class="fl" id="cpuBar" style="width:45%"></div></div><span id="cpuVal" style="font-weight:700;font-size:.8rem;">45%</span></div></div>
+            <div class="sm"><div class="sl2">Memory</div><div style="display:flex;align-items:center;gap:6px;"><div class="prg" style="flex:1"><div class="fl" id="memBar" style="width:55%"></div></div><span id="memVal" style="font-weight:700;font-size:.8rem;">55%</span></div></div>
+            <div class="sm"><div class="sl2">Disk I/O</div><div style="display:flex;align-items:center;gap:6px;"><div class="prg" style="flex:1"><div class="fl" id="diskBar" style="width:45%"></div></div><span id="diskVal" style="font-weight:700;font-size:.8rem;">1.2 GB/s</span></div></div>
+            <div class="sm"><div class="sl2">Network</div><div style="display:flex;align-items:center;gap:6px;"><div class="prg" style="flex:1"><div class="fl" id="netBar" style="width:50%"></div></div><span id="netVal" style="font-weight:700;font-size:.8rem;">800 MB/s</span></div></div>
+          </div>
+        </div>
+        <div class="w c4">
+          <div class="wt">Operations Console</div>
+          <div style="font-size:.78rem;color:var(--ts);display:flex;flex-direction:column;gap:4px;">
+            <div>Replication: Dublin, Frankfurt, Virginia</div>
+            <div id="opHealth">Health: <strong style="color:var(--rd);">Elevated risk</strong></div>
+            <div id="opSync">Sync: 1.86 TB/s</div>
+            <div>Encryption: AES-256 + PQC</div>
+          </div>
+          <div class="tb2 mt2" id="terminalLog">
+            <div class="pr">> Sentinel kernel initialized.</div>
+            <div class="if">> Quantum mirror handshake complete.</div>
+            <div class="er">> ALERT: alpha-0 cluster mismatch.</div>
+            <div class="pr">> Awaiting autonomous repair...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SHARDS ===== -->
+    <div class="pg" id="pg-shards">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Shard Explorer</h2>
+      <div class="flex g3 mb3" style="flex-wrap:wrap;">
+        <input type="text" placeholder="Search by ID or group..." id="shardSearch" oninput="filterShards(this.value)" style="flex:1;min-width:180px;">
+        <select id="shardFilter" onchange="filterShards(document.getElementById('shardSearch').value)"><option value="all">All</option><option value="ok">Healthy</option><option value="warn">Warning</option><option value="error">Error</option><option value="rebuilding">Rebuilding</option></select>
+        <button class="btn s p" onclick="healShards()">Repair All</button>
+        <button class="btn s" onclick="exportShardData()">Export</button>
+      </div>
+      <div class="w"><table class="dt" id="shardTable"><thead><tr><th>ID</th><th>Group</th><th>Status</th><th>Size</th><th>Checksum</th><th>Verified</th><th>Action</th></tr></thead><tbody id="shardTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== NETWORK ===== -->
+    <div class="pg" id="pg-network">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Global Network Map</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        <button class="btn s p" onclick="simulateNetworkEvent()">Simulate Event</button>
+        <button class="btn s" onclick="resetNetwork()">Reset All</button>
+        <span style="margin-left:auto;font-size:.7rem;color:var(--td);" id="netStatus"><span class="sd g"></span> 6/8 nodes nominal</span>
+        <span style="font-size:.7rem;color:var(--td);font-family:var(--mono);">Latency: <strong id="netLatencyDisplay" style="color:var(--tx);">12ms avg</strong></span>
+      </div>
+      <div class="wg">
+        <div class="w c8" style="padding:0;overflow:hidden;">
+          <div class="nm" id="networkMap"></div>
+        </div>
+        <div class="w c4">
+          <div class="wt">Node Details <span class="bd" id="netNodeCount">8 nodes</span></div>
+          <div id="nodeList" style="font-size:.78rem;display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;"></div>
+          <div class="mt2" style="border-top:1px solid var(--br);padding-top:8px;">
+            <div class="flex aic jcsb" style="font-size:.7rem;color:var(--td);">
+              <span>Data in transit:</span>
+              <strong id="netPktCount" style="color:var(--ac);font-family:var(--mono);">0 packets</strong>
+            </div>
+            <div class="flex aic jcsb mt1" style="font-size:.7rem;color:var(--td);">
+              <span>Network load:</span>
+              <strong id="netLoadDisplay" style="color:var(--gr);font-family:var(--mono);">42%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LOGS ===== -->
+    <div class="pg" id="pg-logs">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Logs & Audit</h2>
+      <div class="flex g3 mb3" style="flex-wrap:wrap;">
+        <input type="text" placeholder="Search logs..." id="logSearch" oninput="filterLogs(this.value)" style="flex:1;min-width:180px;">
+        <select id="logLevel" onchange="filterLogs(document.getElementById('logSearch').value)"><option value="all">All</option><option value="ok">Info</option><option value="warn">Warning</option><option value="bad">Error</option></select>
+        <button class="btn s" onclick="clearLogs()">Clear</button>
+        <button class="btn s" onclick="generateSampleLogs()">Generate</button>
+      </div>
+      <div class="w"><table class="dt" id="logTable"><thead><tr><th>Time</th><th>Level</th><th>Source</th><th>Message</th></tr></thead><tbody id="logTableBody"></tbody></table></div>
+    </div>
+
+    <!-- ===== NOTES ===== -->
+    <div class="pg" id="pg-notes">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Notes & Quick Pad</h2>
+      <div class="wg">
+        <div class="w c6">
+          <div class="wt">Write Notes (auto-saved)</div>
+          <div class="notes-area">
+            <textarea id="notesEditor" placeholder="Write your notes here... They are automatically saved to your browser." oninput="saveNotes()"></textarea>
+            <div class="notes-toolbar">
+              <button class="btn s" onclick="clearNotes()">Clear</button>
+              <button class="btn s" onclick="exportNotes()">Export as .txt</button>
+              <button class="btn s" onclick="copyNotes()">Copy to Clipboard</button>
+              <span style="margin-left:auto;font-size:.7rem;color:var(--td);" id="notesStatus">Auto-saved</span>
+            </div>
+          </div>
+        </div>
+        <div class="w c6">
+          <div class="wt">Quick References</div>
+          <div style="font-size:.78rem;color:var(--ts);display:flex;flex-direction:column;gap:6px;">
+            <div style="padding:8px;background:var(--in);border:1px solid var(--br);"><strong>Keyboard Shortcuts:</strong><br>Ctrl+1-9 = Pages, Ctrl+H = Heal, Ctrl+E = Export, Ctrl+K = Search</div>
+            <div style="padding:8px;background:var(--in);border:1px solid var(--br);"><strong>System Status:</strong><br>Check the Dashboard for live metrics on capacity, latency, clusters, and integrity.</div>
+            <div style="padding:8px;background:var(--in);border:1px solid var(--br);"><strong>Terminal Commands:</strong><br>help, status, shards, heal, clear, theme, uptime, version, nodes, scan, export, drill</div>
+            <div style="padding:8px;background:var(--in);border:1px solid var(--br);"><strong>Data Persistence:</strong><br>Notes, To-Do items, Calculator history, and Theme are saved in your browser locally.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TO-DO LIST ===== -->
+    <div class="pg" id="pg-todo">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">To-Do List Manager</h2>
+      <div class="wg">
+        <div class="w c12">
+          <div class="flex g2" style="margin-bottom:10px;">
+            <input type="text" id="todoInput" placeholder="Add a new task..." style="flex:1;" onkeydown="if(event.key==='Enter')addTodo()">
+            <button class="btn p" onclick="addTodo()">Add Task</button>
+            <button class="btn" onclick="clearCompleted()">Clear Done</button>
+            <button class="btn" onclick="clearAllTodos()">Clear All</button>
+          </div>
+          <div style="font-size:.75rem;color:var(--td);margin-bottom:8px;"><span id="todoCount">0</span> tasks total &middot; <span id="todoDone">0</span> completed</div>
+          <div class="todo-list" id="todoList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CALCULATOR ===== -->
+    <div class="pg" id="pg-calc">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Calculator</h2>
+      <div class="wg">
+        <div class="w c5">
+          <div class="wt">Basic Calculator</div>
+          <div class="calc-display" id="calcDisplay">0</div>
+          <div class="calc-grid">
+            <div class="calc-btn clr" onclick="calcClear()">C</div>
+            <div class="calc-btn" onclick="calcInput('(')">(</div>
+            <div class="calc-btn" onclick="calcInput(')')">)</div>
+            <div class="calc-btn op" onclick="calcInput('/')">&divide;</div>
+            <div class="calc-btn" onclick="calcInput('7')">7</div>
+            <div class="calc-btn" onclick="calcInput('8')">8</div>
+            <div class="calc-btn" onclick="calcInput('9')">9</div>
+            <div class="calc-btn op" onclick="calcInput('*')">&times;</div>
+            <div class="calc-btn" onclick="calcInput('4')">4</div>
+            <div class="calc-btn" onclick="calcInput('5')">5</div>
+            <div class="calc-btn" onclick="calcInput('6')">6</div>
+            <div class="calc-btn op" onclick="calcInput('-')">-</div>
+            <div class="calc-btn" onclick="calcInput('1')">1</div>
+            <div class="calc-btn" onclick="calcInput('2')">2</div>
+            <div class="calc-btn" onclick="calcInput('3')">3</div>
+            <div class="calc-btn op" onclick="calcInput('+')">+</div>
+            <div class="calc-btn" onclick="calcInput('0')">0</div>
+            <div class="calc-btn" onclick="calcInput('.')">.</div>
+            <div class="calc-btn" onclick="calcBackspace()">DEL</div>
+            <div class="calc-btn eq" onclick="calcEquals()">=</div>
+          </div>
+        </div>
+        <div class="w c7">
+          <div class="wt">History</div>
+          <div id="calcHistory" style="font-size:.8rem;font-family:var(--mono);display:flex;flex-direction:column;gap:3px;max-height:280px;overflow-y:auto;">
+            <div style="color:var(--td);">No calculations yet.</div>
+          </div>
+          <button class="btn s mt2" onclick="clearCalcHistory()">Clear History</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ALERTS ===== -->
+    <div class="pg" id="pg-alerts">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Alerts</h2>
+      <div class="flex g3 mb3"><button class="btn s" onclick="clearAlerts()">Mark all read</button><button class="btn s r" onclick="generateAlert()">Generate Alert</button></div>
+      <div class="w"><table class="dt"><thead><tr><th>Priority</th><th>Time</th><th>Source</th><th>Message</th><th>Status</th></tr></thead><tbody id="alertBody">
+        <tr><td><span class="pl rd">Critical</span></td><td>14:02:05</td><td>alpha-0</td><td>Integrity drift detected</td><td><span class="pl rd">Active</span></td></tr>
+        <tr><td><span class="pl yw">Warning</span></td><td>14:01:30</td><td>Frankfurt</td><td>Latency above threshold</td><td><span class="pl yw">Acknowledged</span></td></tr>
+        <tr><td><span class="pl bl">Info</span></td><td>14:00:45</td><td>Dublin</td><td>Snapshot policy refreshed</td><td><span class="pl gr">Resolved</span></td></tr>
+      </tbody></table></div>
+    </div>
+
+    <!-- ===== BACKUP ===== -->
+    <div class="pg" id="pg-backup">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Backup & Recovery</h2>
+      <div class="wg">
+        <div class="w c6"><div class="wt">Backup Jobs</div>
+          <table class="dt"><thead><tr><th>Job</th><th>Type</th><th>Last Run</th><th>Status</th><th>Action</th></tr></thead><tbody>
+            <tr><td>Full System Snapshot</td><td>Full</td><td>2026-05-19</td><td><span class="pl gr">Completed</span></td><td><button class="btn s" onclick="restoreBackup('Full System Snapshot')">Restore</button></td></tr>
+            <tr><td>Shard Parity Dump</td><td>Incremental</td><td>2026-05-20</td><td><span class="pl gr">Completed</span></td><td><button class="btn s" onclick="restoreBackup('Shard Parity Dump')">Restore</button></td></tr>
+            <tr><td>Metadata Index</td><td>Full</td><td>2026-05-19</td><td><span class="pl yw">In Progress</span></td><td><button class="btn s" disabled>Running</button></td></tr>
+          </tbody></table>
+        </div>
+        <div class="w c6"><div class="wt">Create Backup</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div><label style="font-size:.75rem;">Name</label><input type="text" value="Auto-Backup " id="backupName" style="width:100%;"></div>
+            <div><label style="font-size:.75rem;">Type</label><select style="width:100%;"><option>Full System</option><option>Incremental</option><option>Configuration</option></select></div>
+            <div><label style="font-size:.75rem;">Include</label><div class="flex g3" style="flex-wrap:wrap;">
+              <label style="font-size:.72rem;"><input type="checkbox" checked> Shards</label>
+              <label style="font-size:.72rem;"><input type="checkbox" checked> Config</label>
+              <label style="font-size:.72rem;"><input type="checkbox" checked> Logs</label>
+            </div></div>
+            <button class="btn p" onclick="startBackup()">Start Backup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TERMINAL ===== -->
+    <div class="pg" id="pg-terminal">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Terminal</h2>
+      <div class="w" style="padding:0;background:#0a0c10;">
+        <div style="padding:6px 12px;border-bottom:1px solid var(--br);display:flex;align-items:center;background:var(--in);">
+          <span style="color:var(--td);font-size:.7rem;font-weight:700;">sentinel-terminal</span>
+          <span style="margin-left:auto;display:flex;gap:3px;">
+            <button style="background:transparent;border:none;color:var(--td);font-size:.7rem;cursor:pointer;padding:2px 6px;" onclick="termClear()">Clear</button>
+            <button style="background:transparent;border:none;color:var(--td);font-size:.7rem;cursor:pointer;padding:2px 6px;" onclick="termHelp()">Help</button>
+          </span>
+        </div>
+        <div id="termOutput" style="padding:12px;font-family:var(--mono);font-size:.7rem;line-height:1.6;max-height:360px;overflow-y:auto;min-height:280px;color:var(--gr);">
+          <div><span style="color:var(--yw);">sentinel@archive</span><span style="color:var(--ac);">:~$</span> ./kernel --init</div>
+          <div style="color:var(--td);">[INFO] Kernel initialized.</div>
+          <div><span style="color:var(--yw);">sentinel@archive</span><span style="color:var(--ac);">:~$</span> ./health --check</div>
+          <div style="color:var(--td);">[OK] 96 shards online.</div>
+          <div><span style="color:var(--yw);">sentinel@archive</span><span style="color:var(--ac);">:~$</span> <span id="termCursor">_</span></div>
+        </div>
+        <div style="display:flex;border-top:1px solid var(--br);">
+          <span style="padding:6px 12px;color:var(--yw);font-family:var(--mono);font-size:.7rem;background:var(--in);font-weight:700;">$</span>
+          <input type="text" id="termInput" placeholder="Type a command..." style="flex:1;background:transparent;border:none;color:var(--gr);font-family:var(--mono);font-size:.7rem;padding:6px 8px;outline:none;" onkeydown="termCmd(event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FILES ===== -->
+    <div class="pg" id="pg-files">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">File Browser</h2>
+      <div class="flex g3 mb3" style="flex-wrap:wrap;">
+        <input type="text" placeholder="Filter..." id="fileSearch" oninput="filterFiles(this.value)" style="flex:1;min-width:160px;">
+        <select><option>All Files</option><option>Data</option><option>Config</option><option>Logs</option></select>
+      </div>
+      <div class="w"><table class="dt"><thead><tr><th>Name</th><th>Type</th><th>Size</th><th>Encrypted</th></tr></thead><tbody id="fileTableBody">
+        <tr><td>shards/</td><td>Directory</td><td>--</td><td>AES-256</td></tr>
+        <tr><td>config/</td><td>Directory</td><td>--</td><td>AES-256</td></tr>
+        <tr><td>manifest.json</td><td>JSON</td><td>12.4 KB</td><td>No</td></tr>
+        <tr><td>recovery.py</td><td>Python</td><td>8.2 KB</td><td>No</td></tr>
+        <tr><td>shard_0.dat</td><td>Data</td><td>256 MB</td><td>AES-256</td></tr>
+        <tr><td>shard_1.dat</td><td>Data</td><td>256 MB</td><td>AES-256</td></tr>
+        <tr><td>vault-config.yaml</td><td>YAML</td><td>4.1 KB</td><td>No</td></tr>
+      </tbody></table></div>
+    </div>
+
+    <!-- ===== REPORTS ===== -->
+    <div class="pg" id="pg-reports">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">Reports & Export</h2>
+      <div class="wg">
+        <div class="w c6">
+          <div class="wt">System Performance (Last 24h)</div>
+          <div class="cx" style="height:160px;"><svg viewBox="0 0 600 160" preserveAspectRatio="none"><rect x="0" y="30" width="35" height="120" fill="var(--ac)" opacity=".7"/><rect x="45" y="50" width="35" height="100" fill="var(--ac)" opacity=".7"/><rect x="90" y="15" width="35" height="135" fill="var(--ach)" opacity=".7"/><rect x="135" y="40" width="35" height="110" fill="var(--ach)" opacity=".7"/><rect x="180" y="55" width="35" height="95" fill="var(--ac)" opacity=".7"/><rect x="225" y="20" width="35" height="130" fill="var(--ach)" opacity=".7"/><rect x="270" y="60" width="35" height="90" fill="var(--ac)" opacity=".7"/><rect x="315" y="35" width="35" height="115" fill="var(--ach)" opacity=".7"/><rect x="360" y="45" width="35" height="105" fill="var(--ac)" opacity=".7"/><rect x="405" y="10" width="35" height="140" fill="var(--ach)" opacity=".7"/><rect x="450" y="50" width="35" height="100" fill="var(--ac)" opacity=".7"/><rect x="495" y="30" width="35" height="120" fill="var(--ach)" opacity=".7"/></svg></div>
+        </div>
+        <div class="w c6">
+          <div class="wt">Report Generator</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div><label style="font-size:.75rem;">Type</label><select id="reportType" style="width:100%;margin-top:2px;"><option>System Health Summary</option><option>Security Audit</option><option>Performance Analytics</option><option>Shard Integrity</option><option>Compliance Report</option></select></div>
+            <div><label style="font-size:.75rem;">Format</label><div class="flex g3 mt1" id="reportFormat">
+              <label style="font-size:.72rem;"><input type="radio" name="rf" value="pdf" checked> PDF</label>
+              <label style="font-size:.72rem;"><input type="radio" name="rf" value="csv"> CSV</label>
+              <label style="font-size:.72rem;"><input type="radio" name="rf" value="json"> JSON</label>
+              <label style="font-size:.72rem;"><input type="radio" name="rf" value="html"> HTML</label>
+            </div></div>
+            <div><label style="font-size:.75rem;">Include</label><div class="flex g3" style="flex-wrap:wrap;margin-top:2px;">
+              <label style="font-size:.72rem;"><input type="checkbox" id="incMetrics" checked> Metrics</label>
+              <label style="font-size:.72rem;"><input type="checkbox" id="incShards" checked> Shard Status</label>
+              <label style="font-size:.72rem;"><input type="checkbox" id="incAlerts" checked> Alerts</label>
+              <label style="font-size:.72rem;"><input type="checkbox" id="incNodes" checked> Node Status</label>
+            </div></div>
+            <button class="btn p" onclick="generateReport()">Generate & Download Report</button>
+            <div id="reportPreview" style="margin-top:6px;font-size:.72rem;color:var(--td);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== API CONSOLE ===== -->
+    <div class="pg" id="pg-api">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:10px;">API Console</h2>
+      <div class="wg">
+        <div class="w c5">
+          <div class="wt">Request Builder</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="flex g2">
+              <select id="apiMethod" style="width:90px;"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
+              <select id="apiEndpoint" style="flex:1;">
+                <option value="/api/v1/integrity">/api/v1/integrity</option>
+                <option value="/api/v1/shards">/api/v1/shards</option>
+                <option value="/api/v1/status">/api/v1/status</option>
+                <option value="/api/v1/nodes">/api/v1/nodes</option>
+                <option value="/api/v1/alerts">/api/v1/alerts</option>
+                <option value="/api/v1/backup">/api/v1/backup</option>
+              </select>
+              <button class="btn s" onclick="addCustomEndpoint()">Custom</button>
+            </div>
+            <div><label style="font-size:.72rem;">Headers</label><textarea id="apiHeaders" rows="3" style="width:100%;font-family:var(--mono);font-size:.7rem;">{"Authorization": "Bearer sk-sentinel", "Content-Type": "application/json"}</textarea></div>
+            <div><label style="font-size:.72rem;">Body (for POST/PUT/PATCH)</label><textarea id="apiBody" rows="4" style="width:100%;font-family:var(--mono);font-size:.7rem;">{"shard_id": "alpha-0", "action": "verify"}</textarea></div>
+            <button class="btn p" onclick="sendRequest()">Send Request</button>
+          </div>
+        </div>
+        <div class="w c7">
+          <div class="ctr"><div class="wt">Response</div>
+            <div class="flex g2">
+              <button class="btn s" onclick="copyResponse()">Copy</button>
+              <button class="btn s" onclick="clearResponse()">Clear</button>
+            </div>
+          </div>
+          <div id="apiResponse" style="background:#0a0c10;padding:10px;font-family:var(--mono);font-size:.68rem;max-height:400px;overflow-y:auto;min-height:200px;color:var(--gr);">
+            <div style="color:var(--td);">Ready. Select an endpoint and click 'Send Request' to execute.</div>
+          </div>
+          <div style="margin-top:4px;font-size:.7rem;color:var(--td);" id="apiStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HELP ===== -->
+    <div class="pg" id="pg-help">
+      <h2 style="font-weight:900;font-size:1.2rem;margin-bottom:14px;">Help & About This Application</h2>
+      <div class="help-section">
+        <h3>What Is Sentinel Archive?</h3>
+        <p style="font-size:.78rem;color:var(--ts);line-height:1.7;">
+          Sentinel Archive is a <strong>universal command center dashboard</strong> designed to give you complete visibility and control over your data vault system. It simulates an enterprise-grade shard storage monitoring platform with real-time metrics, incident management, backup controls, and more.
+        </p>
+      </div>
+      <div class="help-section">
+        <h3>Key Benefits & What You Can Do</h3>
+        <ul>
+          <li><strong>Monitor Live Status</strong> <span>See capacity, latency, clusters, and threat scan rates updating in real-time every 1.5 seconds.</span></li>
+          <li><strong>Track Integrity</strong> <span>The Global Integrity panel shows system health with risk scoring and trend charts.</span></li>
+          <li><strong>Manage Shards</strong> <span>Visualize and repair a 96-shard matrix. Click any shard cell to check its status.</span></li>
+          <li><strong>View Incident Feed</strong> <span>Watch live operational events flow in with color-coded severity levels.</span></li>
+          <li><strong>Analyze Resources</strong> <span>CPU, Memory, Disk I/O, and Network throughput bars update automatically.</span></li>
+          <li><strong>Explore the Network</strong> <span>A geo-distributed network map shows 8 global nodes with connection lines and health status.</span></li>
+          <li><strong>Audit Logs</strong> <span>Search, filter, and generate sample log entries for testing and review.</span></li>
+          <li><strong>Write & Save Notes</strong> <span>Built-in notes pad with auto-save, export to .txt, and clipboard copy.</span></li>
+          <li><strong>Manage Tasks</strong> <span>Full to-do list with add/complete/delete, clear completed, and persistent storage.</span></li>
+          <li><strong>Use the Calculator</strong> <span>Full basic calculator with expression history and persistent memory.</span></li>
+          <li><strong>Generate Real Reports</strong> <span>Export system reports in PDF, CSV, JSON, or HTML format with customizable content.</span></li>
+          <li><strong>Send API Requests</strong> <span>Real API console with method selection, headers editor, body input, and simulated responses.</span></li>
+          <li><strong>Run the Terminal</strong> <span>Full terminal emulator with 12+ commands including help, status, scan, and heal.</span></li>
+          <li><strong>Heal the System</strong> <span>Click the Heal button to watch the autonomous repair pipeline in action.</span></li>
+          <li><strong>Run Resilience Drills</strong> <span>Test system response with synthetic failure simulation drills.</span></li>
+          <li><strong>Export Snapshots</strong> <span>Download system snapshots as JSON files for offline analysis.</span></li>
+          <li><strong>Customize Themes</strong> <span>8 themes including Deep Space, Amber Glow, Nordic Frost, Aurora, and more.</span></li>
+          <li><strong>Configure Settings</strong> <span>Toggle auto-heal, telemetry, notifications, encryption, regions, and more.</span></li>
+          <li><strong>Use Keyboard Shortcuts</strong> <span>Ctrl+1-9 for page switching, Ctrl+H heal, Ctrl+E export, Ctrl+K search, Escape to close modals.</span></li>
+          <li><strong>Data Persists</strong> <span>Your notes, to-do items, calculator history, and selected theme are saved in your browser automatically.</span></li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>Everyday Use Cases</h3>
+        <ul>
+          <li><strong>Daily System Check</strong> <span>Open the Dashboard every morning to quickly verify all systems are nominal.</span></li>
+          <li><strong>Incident Response</strong> <span>Watch the feed for alerts, then use the Heal button or Terminal to respond.</span></li>
+          <li><strong>Note Taking</strong> <span>Use the Notes page for meeting notes, system changes, or daily journaling.</span></li>
+          <li><strong>Task Management</strong> <span>Keep a running to-do list of maintenance tasks, upgrades, and follow-ups.</span></li>
+          <li><strong>Quick Calculations</strong> <span>Use the Calculator for quick data size conversions or capacity planning math.</span></li>
+          <li><strong>Reporting</strong> <span>Generate and export system health reports for weekly reviews or compliance audits.</span></li>
+          <li><strong>API Testing</strong> <span>Use the API Console to test endpoints before integrating with external tools.</span></li>
+          <li><strong>Learning & Training</strong> <span>New users can practice with the terminal, drills, and log generation in a safe environment.</span></li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>Technical Details</h3>
+        <ul>
+          <li><strong>Version</strong> <span>3.1.0</span></li>
+          <li><strong>Type</strong> <span>Single HTML file -- no server required, works offline in any modern browser</span></li>
+          <li><strong>Storage</strong> <span>Browser localStorage for themes, notes, todos, calculator history</span></li>
+          <li><strong>Export</strong> <span>JSON snapshots, TXT notes, and multi-format reports (PDF/CSV/JSON/HTML)</span></li>
+          <li><strong>Encryption</strong> <span>AES-256-GCM + Kyber-1024 (simulated)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="pg" id="pg-settings">
+      <h2 style="font-weight:900;font-size:1.15rem;margin-bottom:14px;">Settings</h2>
+      <div class="sg2"><div class="sgt">Theme</div>
+        <div class="tg" id="themeGrid">
+          <div class="to act" data-theme="deepspace" onclick="setTheme('deepspace')"><div class="tsw" style="background:#1b1e24;"></div>Deep Space</div>
+          <div class="to" data-theme="amber" onclick="setTheme('amber')"><div class="tsw" style="background:#1a150b;"></div>Amber Glow</div>
+          <div class="to" data-theme="nordic" onclick="setTheme('nordic')"><div class="tsw" style="background:#eceff4;"></div>Nordic Frost</div>
+          <div class="to" data-theme="aurora" onclick="setTheme('aurora')"><div class="tsw" style="background:#0a0a1a;"></div>Aurora</div>
+          <div class="to" data-theme="rust" onclick="setTheme('rust')"><div class="tsw" style="background:#1a120e;"></div>Rust & Iron</div>
+          <div class="to" data-theme="ocean" onclick="setTheme('ocean')"><div class="tsw" style="background:#0a1628;"></div>Ocean Depths</div>
+          <div class="to" data-theme="terminal" onclick="setTheme('terminal')"><div class="tsw" style="background:#0d1117;"></div>Terminal</div>
+          <div class="to" data-theme="paper" onclick="setTheme('paper')"><div class="tsw" style="background:#faf8f5;"></div>Paper</div>
+        </div>
+      </div>
+      <div class="sg2"><div class="sgt">General</div>
+        <div class="sr2"><div><div class="srl">Auto-heal</div><div class="srd">Auto repair on threat</div></div><div class="tg2 on" id="toggleAutoHeal" onclick="toggleSetting('autoHeal')"></div></div>
+        <div class="sr2"><div><div class="srl">Telemetry</div><div class="srd">Live metrics streaming</div></div><div class="tg2 on" id="toggleTelemetry" onclick="toggleSetting('telemetry')"></div></div>
+        <div class="sr2"><div><div class="srl">Notifications</div><div class="srd">System alerts</div></div><div class="tg2" id="toggleNotify" onclick="toggleSetting('notify')"></div></div>
+      </div>
+      <div class="sg2"><div class="sgt">Security</div>
+        <div class="sr2"><div><div class="srl">Encryption</div><div class="srd">AES-256-GCM + Kyber</div></div><select style="width:150px;"><option>AES-256 + Kyber-1024</option><option>AES-256-GCM</option><option>ChaCha20-Poly1305</option></select></div>
+        <div class="sr2"><div><div class="srl">Session Timeout</div><div class="srd">Auto-logout</div></div><select style="width:110px;"><option>5 min</option><option>15 min</option><option selected>30 min</option><option>1 hour</option></select></div>
+      </div>
+      <div class="flex g2" style="justify-content:flex-end;">
+        <button class="btn" onclick="toast('Settings reset','warning')">Reset Defaults</button>
+        <button class="btn p" onclick="toast('Settings saved','success')">Save</button>
+      </div>
+    </div>
+
+    </div><!-- end pw -->
+  </div><!-- end ma -->
+</div><!-- end app -->
+
+<!-- MODALS -->
+<div class="mo" id="userModal" onclick="if(event.target===this)closeModal('userModal')">
+  <div class="mo2"><button class="mc" onclick="closeModal('userModal')">X</button>
+    <div class="mt2">Add New User</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div><label style="font-size:.78rem;">Email</label><input type="text" style="width:100%;margin-top:2px;" placeholder="user@sentinelsys.io"></div>
+      <div><label style="font-size:.78rem;">Role</label><select style="width:100%;margin-top:2px;"><option>Administrator</option><option selected>Operator</option><option>Viewer</option></select></div>
+      <button class="btn p" onclick="closeModal('userModal');toast('User invitation sent','success')">Invite User</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="tw" id="toastWrap"></div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+const state = {
+  theme: localStorage.getItem('s-theme') || 'deepspace',
+  page: 'dashboard',
+  mode: 'alert',
+  healing: false,
+  shards: [],
+  logs: [],
+  startTime: Date.now(),
+  chartVals: [74,70,68,63,59,55,49,45,38,31,22,14],
+  settings: { autoHeal: true, telemetry: true, notify: false },
+  todos: JSON.parse(localStorage.getItem('s-todos')||'[]'),
+  calcHistory: JSON.parse(localStorage.getItem('s-calc')||'[]'),
+  nodes: [
+    {id:'dublin',label:'Dublin, IE',x:22,y:35,status:'healthy'},
+    {id:'frankfurt',label:'Frankfurt, DE',x:40,y:38,status:'healthy'},
+    {id:'virginia',label:'Virginia, US',x:13,y:45,status:'degraded'},
+    {id:'tokyo',label:'Tokyo, JP',x:75,y:30,status:'healthy'},
+    {id:'sydney',label:'Sydney, AU',x:85,y:55,status:'healthy'},
+    {id:'singapore',label:'Singapore, SG',x:70,y:48,status:'warning'},
+    {id:'london',label:'London, UK',x:28,y:28,status:'healthy'},
+    {id:'mumbai',label:'Mumbai, IN',x:62,y:40,status:'healthy'}
+  ]
+};
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  setTheme(state.theme);
+  initShards(); initNetMap(); initLogs();
+  startClock(); startMetrics();
+  loadNotes(); renderTodos(); renderCalcHistory();
+  updateBadges();
+});
+
+// ============================================
+// PAGE SWITCH
+// ============================================
+function sw(pg) {
+  state.page = pg;
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('act'));
+  document.getElementById('pg-'+pg).classList.add('act');
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('act'));
+  const el = document.querySelector('.ni[data-pg="'+pg+'"]');
+  if (el) el.classList.add('act');
+  document.getElementById('breadcrumb').innerHTML = '/ <span>'+pg.charAt(0).toUpperCase()+pg.slice(1)+'</span>';
+}
+
+// ============================================
+// THEMES
+// ============================================
+function setTheme(t) {
+  state.theme = t;
+  const vars = {
+    deepspace:{},
+    amber:{'--bg':'#120e06','--sf':'#1a150b','--el':'#2a2010','--cd':'#1e160c','--cdh':'#2a1e12','--in':'#140f08','--sb':'#0e0a04','--br':'#3d2e14','--bl':'#4d3c1c','--bi':'#3a2a12','--tx':'#fef3c7','--ts':'#d4a762','--td':'#927540','--ac':'#d97706','--ach':'#f59e0b','--gr':'#86efac','--rd':'#fca5a5','--yw':'#fbbf24','--pu':'#a78bfa'},
+    nordic:{'--bg':'#eceff4','--sf':'#e5e9f0','--el':'#d8dee9','--cd':'#e5e9f0','--cdh':'#d8dee9','--in':'#d8dee9','--sb':'#eceff4','--br':'#b0b8c4','--bl':'#9aa4b4','--bi':'#b0b8c4','--tx':'#2e3440','--ts':'#4c566a','--td':'#7b88a1','--ac':'#5e81ac','--ach':'#6b94b8','--gr':'#a3be8c','--rd':'#bf616a','--yw':'#d08770','--pu':'#b48ead'},
+    aurora:{'--bg':'#0a0a1a','--sf':'#12102a','--el':'#1e1a3e','--cd':'#100e22','--cdh':'#18142e','--in':'#0c0a1c','--sb':'#080616','--br':'#3a2e6e','--bl':'#4a3a88','--bi':'#342a5e','--tx':'#ede9fe','--ts':'#a78bfa','--td':'#7c3aed','--ac':'#8b5cf6','--ach':'#9d71f7','--gr':'#34d399','--rd':'#fb7185','--yw':'#fbbf24','--pu':'#c084fc'},
+    rust:{'--bg':'#1a120e','--sf':'#221a14','--el':'#2e241e','--cd':'#1c1612','--cdh':'#261e18','--in':'#120e0a','--sb':'#0e0a08','--br':'#3d2e1e','--bl':'#4d3c2a','--bi':'#352818','--tx':'#f0e6d3','--ts':'#b8956a','--td':'#8b6f4e','--ac':'#d97706','--ach':'#f59e0b','--gr':'#86efac','--rd':'#f87171','--yw':'#fbbf24','--pu':'#a78bfa'},
+    ocean:{'--bg':'#0a1628','--sf':'#0f2240','--el':'#183458','--cd':'#0c1c32','--cdh':'#122640','--in':'#081428','--sb':'#060e1c','--br':'#1a3a5c','--bl':'#264a6e','--bi':'#162e4e','--tx':'#e0f2fe','--ts':'#7dd3fc','--td':'#38bdf8','--ac':'#0ea5e9','--ach':'#1dafef','--gr':'#34d399','--rd':'#fb7185','--yw':'#fbbf24','--pu':'#a78bfa'},
+    terminal:{'--bg':'#0d1117','--sf':'#161b22','--el':'#21262d','--cd':'#0d1117','--cdh':'#161b22','--in':'#080c12','--sb':'#060a10','--br':'#30363d','--bl':'#404650','--bi':'#282e34','--tx':'#c9d1d9','--ts':'#8b949e','--td':'#484f58','--ac':'#58a6ff','--ach':'#6ab0ff','--gr':'#30db5b','--rd':'#f85149','--yw':'#d29922','--pu':'#bc8cff'},
+    paper:{'--bg':'#faf8f5','--sf':'#f0ece4','--el':'#e6e0d4','--cd':'#f0ece4','--cdh':'#e6e0d4','--in':'#e6e0d4','--sb':'#faf8f5','--br':'#c8bcae','--bl':'#b8ac9e','--bi':'#c8bcae','--tx':'#1c1917','--ts':'#57534e','--td':'#a8a29e','--ac':'#8b5cf6','--ach':'#7c4df0','--gr':'#10b981','--rd':'#ef4444','--yw':'#f59e0b','--pu':'#a78bfa'}
+  };
+  const v = vars[t]||vars.deepspace;
+  for (let k in v) document.documentElement.style.setProperty(k, v[k]);
+  localStorage.setItem('s-theme', t);
+  document.querySelectorAll('.to').forEach(o => o.classList.remove('act'));
+  const el = document.querySelector('.to[data-theme="'+t+'"]');
+  if (el) el.classList.add('act');
+}
+function toggleTheme() {
+  const ts = ['deepspace','amber','nordic','aurora','rust','ocean','terminal','paper'];
+  setTheme(ts[(ts.indexOf(state.theme)+1)%ts.length]);
+  toast('Theme updated', 'info');
+  playAlertSound('info');
+}
+
+// ============================================
+// SHARDS
+// ============================================
+function initShards() {
+  const m = document.getElementById('shardMatrix'), tb = document.getElementById('shardTableBody');
+  m.innerHTML = ''; tb.innerHTML = ''; state.shards = [];
+  const grps = ['alpha-0','alpha-1','beta-0','beta-1','gamma-0','gamma-1'];
+  for (let i=0;i<96;i++) {
+    const st = i===37||i===38?'error':i===45||i===67?'warn':i===12?'rebuilding':'ok';
+    const s = {id:'Shard_'+i,group:grps[i%6],status:st,size:(Math.random()*128+64).toFixed(1)+' MB',chk:'0x'+Math.random().toString(16).slice(2,10),lv:new Date(Date.now()-Math.random()*7200000).toLocaleTimeString()};
+    state.shards.push(s);
+    const c = document.createElement('div');
+    c.className = 'sc '+(st==='ok'?'ok':st==='warn'?'wn':st==='error'?'er':'bd');
+    c.title = s.id+' ('+s.group+')';
+    c.onclick = function(){ toast(s.id+': '+st.toUpperCase(), st==='ok'?'info':st==='warn'?'warning':'error'); playAlertSound(st==='error'?'error':st==='warn'?'warning':'info'); };
+    m.appendChild(c);
+  }
+  renderShardTable();
+  updateBadges();
+}
+function renderShardTable(f,a) {
+  const tb = document.getElementById('shardTableBody'); tb.innerHTML = '';
+  state.shards.forEach(s => {
+    if (f&&f!=='all'&&s.status!==f) return;
+    if (a&&!s.id.toLowerCase().includes(a.toLowerCase())&&!s.group.toLowerCase().includes(a.toLowerCase())) return;
+    const cl = s.status==='ok'?'gr':s.status==='warn'?'yw':s.status==='error'?'rd':'bl';
+    tb.innerHTML += '<tr><td><strong>'+s.id+'</strong></td><td>'+s.group+'</td><td><span class="pl '+cl+'">'+s.status.toUpperCase()+'</span></td><td>'+s.size+'</td><td style="font-family:var(--mono);font-size:.65rem;">'+s.chk+'</td><td>'+s.lv+'</td><td><button class="btn s" onclick="toast(\'Verifying '+s.id+'\',\'info\');playAlertSound(\'info\')">Verify</button></td></tr>';
+  });
+}
+function filterShards(s) { renderShardTable(document.getElementById('shardFilter').value, s); }
+function randomizeShards() {
+  const sts = ['ok','ok','ok','warn','ok','ok','error','ok','ok','rebuilding','ok','ok'];
+  state.shards.forEach(s => { s.status = sts[Math.floor(Math.random()*sts.length)]; });
+  document.querySelectorAll('.sc').forEach((c,i) => { const st=state.shards[i].status; c.className='sc '+(st==='ok'?'ok':st==='warn'?'wn':st==='error'?'er':'bd'); });
+  renderShardTable(); updateBadges(); toast('Shards randomized','info');
+  playAlertSound('info');
+}
+function healShards() {
+  state.shards.forEach(s => s.status = 'rebuilding');
+  document.querySelectorAll('.sc').forEach(c => c.className = 'sc bd');
+  renderShardTable(); termAppend('Starting shard repair...','#99f6e4');
+  toast('Shard repair initiated','warning');
+  playAlertSound('warning');
+  setTimeout(() => {
+    state.shards.forEach(s => s.status = 'ok');
+    document.querySelectorAll('.sc').forEach(c => c.className = 'sc ok');
+    renderShardTable(); termAppend('Shard repair complete.','#86efac');
+    toast('All shards repaired','success');
+    playAlertSound('success');
+    updateBadges();
+  }, 400);
+}
+function exportShardData() {
+  const b = new Blob([JSON.stringify(state.shards,null,2)],{type:'application/json'});
+  const u = URL.createObjectURL(b); const a = document.createElement('a');
+  a.href=u; a.download='shard-manifest.json'; a.click();
+  URL.revokeObjectURL(u); toast('Shard data exported','success');
+  playAlertSound('success');
+}
+
+// ============================================
+// NETWORK - SPECTACULAR WORLD MAP
+// ============================================
+const continentPaths = [
+  // North America (realistic shape) 
+  'M40 28 Q42 24 48 23 Q52 20 56 22 Q60 21 64 24 Q67 22 70 25 Q73 28 72 32 Q74 35 72 38 Q70 42 66 43 Q62 44 58 42 Q54 44 50 42 Q46 43 43 40 Q40 37 38 34 Q37 30 40 28Z',
+  // South America (realistic)
+  'M54 46 Q57 44 60 46 Q63 48 64 52 Q65 56 63 60 Q62 65 60 68 Q57 70 55 68 Q52 64 51 58 Q50 52 52 48 Q53 46 54 46Z',
+  // Europe (detailed)
+  'M50 27 Q53 24 57 25 Q60 24 63 26 Q65 28 64 31 Q63 34 60 35 Q57 36 54 34 Q51 32 49 30 Q48 28 50 27Z',
+  // Africa (detailed with Madagascar)
+  'M52 36 Q55 34 59 35 Q62 37 64 40 Q65 44 64 48 Q63 52 60 54 Q57 55 54 53 Q51 50 50 46 Q49 42 50 38 Q51 36 52 36Z',
+  // Asia (large realistic)
+  'M62 25 Q66 22 70 23 Q76 22 80 25 Q84 27 86 31 Q85 35 82 38 Q78 40 74 39 Q70 40 66 38 Q62 36 60 32 Q58 28 60 26 Q61 25 62 25Z',
+  // Southeast Asia / Indonesia
+  'M72 42 Q74 40 77 41 Q79 43 78 46 Q76 48 73 47 Q71 45 72 42Z',
+  // Australia
+  'M76 53 Q80 51 84 52 Q87 54 86 58 Q84 61 80 60 Q76 58 74 55 Q74 53 76 53Z',
+  // Greenland
+  'M46 20 Q50 18 54 20 Q56 23 54 26 Q50 27 46 24 Q44 22 46 20Z',
+  // India subcontinent
+  'M68 33 Q70 31 73 33 Q74 36 72 39 Q70 40 68 38 Q66 35 68 33Z',
+  // Middle East
+  'M60 32 Q63 30 66 31 Q67 34 65 36 Q62 37 60 35 Q58 33 60 32Z',
+  // UK/Ireland
+  'M46 26 Q48 24 50 25 Q50 27 48 28 Q46 27 46 26Z',
+  // Japan
+  'M86 28 Q87 26 88 28 Q88 31 87 32 Q86 30 86 28Z',
+  // Scandinavia
+  'M54 21 Q57 19 60 20 Q61 22 59 24 Q56 25 54 23Z'
+];
+
+function getNodeHealth(n) {
+  return n.status==='healthy' ? 'Operational' : n.status==='warning' ? 'Degraded' : 'Critical';
+}
+function getNodeColor(n) {
+  if (n.id==='dublin') return '#7d3c98';
+  return n.status==='healthy' ? 'var(--gr)' : n.status==='warning' ? 'var(--yw)' : 'var(--rd)';
+}
+
+let packetInterval = null;
+let packetCount = 0;
+
+function initNetMap() {
+  const map = document.getElementById('networkMap'), nl = document.getElementById('nodeList');
+  if (!map) return;
+  map.innerHTML = '';
+  
+  // SVG continents
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'continents');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  continentPaths.forEach(d => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+  });
+  map.appendChild(svg);
+  
+  // Status bar
+  const nsb = document.createElement('div');
+  nsb.className = 'nsb';
+  nsb.innerHTML = '<span>Nodes: <strong id="nsbNodes">8</strong></span><span>Health: <strong id="nsbHealth" style="color:var(--gr);">87%</strong></span><span>Uplink: <strong id="nsbUplink">2.4 Tbps</strong></span><span>Routes: <strong id="nsbRoutes">11</strong></span>';
+  map.appendChild(nsb);
+  
+  // Connection lines
+  const conns = [['dublin','frankfurt'],['dublin','london'],['dublin','virginia'],
+    ['frankfurt','london'],['frankfurt','mumbai'],['frankfurt','virginia'],
+    ['virginia','london'],['mumbai','singapore'],['singapore','tokyo'],
+    ['tokyo','sydney'],['mumbai','tokyo']];
+  
+  setTimeout(() => {
+    conns.forEach(([a,b]) => {
+      const na=state.nodes.find(n=>n.id===a), nb=state.nodes.find(n=>n.id===b);
+      if (!na||!nb) return;
+      const l = document.createElement('div');
+      l.className = 'nln' + (na.status==='healthy'&&nb.status==='healthy' ? ' act' : '') + (na.status==='degraded'||nb.status==='degraded' ? ' high' : '');
+      const x1=(na.x/100)*map.offsetWidth, y1=(na.y/100)*map.offsetHeight;
+      const x2=(nb.x/100)*map.offsetWidth, y2=(nb.y/100)*map.offsetHeight;
+      const dx=x2-x1, dy=y2-y1;
+      l.style.width = Math.sqrt(dx*dx+dy*dy)+'px';
+      l.style.left = x1+'px'; l.style.top = y1+'px';
+      l.style.transform = 'rotate('+Math.atan2(dy,dx)*180/Math.PI+'deg)';
+      l.style.transformOrigin = '0 0';
+      map.appendChild(l);
+    });
+    
+    // Nodes
+    nl.innerHTML = '';
+    state.nodes.forEach((n,i) => {
+      const el = document.createElement('div');
+      el.className = 'nn'+(n.status==='healthy'?' mj':'')+(n.id==='dublin'?' hb':'');
+      el.style.left = n.x+'%'; el.style.top = n.y+'%';
+      el.style.background = getNodeColor(n);
+      
+      // Tooltip
+      const lb = document.createElement('span'); lb.className = 'nl2';
+      lb.innerHTML = n.label + '<span class="ns">' + getNodeHealth(n) + ' &middot; ' + (8+i)+'ms</span>';
+      el.appendChild(lb);
+      
+      // Click handler
+      el.onclick = function(e) {
+        e.stopPropagation();
+        showNodeDetail(n, e);
+      };
+      
+      map.appendChild(el);
+      
+      // Node list
+      const cl = n.status==='healthy'?'g':n.status==='warning'?'y':'r';
+      nl.innerHTML += '<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-bottom:1px solid var(--br);font-size:.75rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background=\'var(--el)\'" onmouseout="this.style.background=\'\'" onclick="showNodeDetail(state.nodes['+i+'],null)">'
+        + '<span class="sd '+cl+(n.status!=='healthy'?' blk':'')+'"></span>'
+        + '<span style="flex:1;font-weight:600;">'+n.label+'</span>'
+        + '<span style="color:var(--td);">'+getNodeHealth(n)+'</span>'
+        + '<span style="color:var(--td);font-family:var(--mono);font-size:.6rem;">'+(8+i)+'ms</span></div>';
+    });
+    
+    updateNetStatus();
+    startPacketAnimation(map, conns);
+  }, 100);
+}
+
+function showNodeDetail(n, e) {
+  toast(n.label + ': ' + getNodeHealth(n) + ' (' + (8+state.nodes.indexOf(n)) + 'ms)', 
+    n.status==='healthy'?'success':n.status==='warning'?'warning':'error');
+}
+
+function updateNetStatus() {
+  const st = document.getElementById('netStatus');
+  if (!st) return;
+  const healthy = state.nodes.filter(n=>n.status==='healthy').length;
+  const total = state.nodes.length;
+  st.innerHTML = '<span class="sd '+(healthy===total?'g':healthy>total/2?'y':'r')+'"></span> '+
+    healthy+'/'+total+' nodes nominal';
+  document.getElementById('netLatencyDisplay').textContent = Math.round(8+Math.random()*12)+'ms avg';
+  document.getElementById('netLoadDisplay').textContent = Math.round(30+Math.random()*40)+'%';
+  document.getElementById('netNodeCount').textContent = total+' nodes';
+}
+
+function startPacketAnimation(map, conns) {
+  if (packetInterval) clearInterval(packetInterval);
+  packetCount = 0;
+  packetInterval = setInterval(() => {
+    if (document.getElementById('pg-network').classList.contains('act') === false) return;
+    const conn = conns[Math.floor(Math.random()*conns.length)];
+    const na=state.nodes.find(n=>n.id===conn[0]), nb=state.nodes.find(n=>n.id===conn[1]);
+    if (!na||!nb) return;
+    
+    const pkt = document.createElement('div'); pkt.className = 'pkt';
+    const x1=(na.x/100)*map.offsetWidth, y1=(na.y/100)*map.offsetHeight;
+    const x2=(nb.x/100)*map.offsetWidth, y2=(nb.y/100)*map.offsetHeight;
+    pkt.style.left = x1+'px'; pkt.style.top = y1+'px';
+    map.appendChild(pkt);
+    packetCount++;
+    document.getElementById('netPktCount').textContent = packetCount+' packets';
+    
+    // Animate along the line
+    const dx=x2-x1, dy=y2-y1, dist=Math.sqrt(dx*dx+dy*dy);
+    const steps=30; let s=0;
+    const anim = setInterval(() => {
+      s++; if (s>steps) { clearInterval(anim); pkt.remove(); return; }
+      const t=s/steps;
+      pkt.style.left=(x1+dx*t)+'px'; pkt.style.top=(y1+dy*t)+'px';
+      pkt.style.background = s>steps*0.7 ? 'var(--rd)' : 'var(--ach)';
+      pkt.style.boxShadow = s>steps*0.7 ? '0 0 8px var(--rd)' : '0 0 8px var(--ach)';
+    }, 25);
+  }, 600 + Math.random() * 800);
+}
+
+function simulateNetworkEvent() {
+  const n = state.nodes[Math.floor(Math.random()*state.nodes.length)];
+  const oldStatus = n.status;
+  const statuses = ['healthy','healthy','healthy','healthy','warning','degraded'];
+  n.status = statuses[Math.floor(Math.random()*statuses.length)];
+  toast('Network event at ' + n.label + ': ' + oldStatus + ' → ' + n.status,
+    n.status==='healthy'?'success':n.status==='warning'?'warning':'error');
+  playAlertSound(n.status==='healthy'?'info':n.status==='warning'?'warning':'error');
+  // Rebuild
+  const map = document.getElementById('networkMap');
+  const nl = document.getElementById('nodeList');
+  map.innerHTML = '';
+  initNetMap();
+  updateBadges();
+  updateNetStatus();
+}
+
+function resetNetwork() {
+  state.nodes.forEach(n => n.status = n.id==='virginia'?'degraded':'healthy');
+  const map = document.getElementById('networkMap');
+  map.innerHTML = '';
+  initNetMap();
+  updateBadges();
+  updateNetStatus();
+  toast('Network reset to defaults','info');
+  playAlertSound('success');
+}
+
+// ============================================
+// LOGS
+// ============================================
+function initLogs() {
+  state.logs = [
+    {t:'14:02:10',l:'ok',s:'System',m:'Autonomous parity check completed'},
+    {t:'14:02:05',l:'bad',s:'alpha-0',m:'Integrity drift detected'},
+    {t:'14:02:00',l:'warn',s:'Network',m:'Frankfurt latency spike to 42ms'},
+    {t:'14:01:45',l:'ok',s:'Dublin',m:'Geo-replication sync completed'},
+    {t:'14:01:30',l:'ok',s:'System',m:'Snapshot policy refreshed'},
+    {t:'14:01:00',l:'warn',s:'Storage',m:'Parity buffer at 78%'},
+    {t:'14:00:30',l:'bad',s:'alpha-0',m:'Checksum mismatch on shard 37'},
+    {t:'14:00:00',l:'ok',s:'System',m:'Kernel initialized'}
+  ];
+  renderLogs();
+}
+function renderLogs(sr,lv) {
+  const b = document.getElementById('logTableBody'); b.innerHTML = '';
+  state.logs.forEach(l => {
+    if (lv&&lv!=='all'&&l.l!==lv) return;
+    if (sr&&!l.m.toLowerCase().includes(sr.toLowerCase())&&!l.s.toLowerCase().includes(sr.toLowerCase())) return;
+    const cl = l.l==='ok'?'gr':l.l==='warn'?'yw':'rd';
+    const tx = l.l==='ok'?'Info':l.l==='warn'?'Warning':'Error';
+    b.innerHTML += '<tr><td style="font-family:var(--mono);font-size:.65rem;">'+l.t+'</td><td><span class="pl '+cl+'">'+tx+'</span></td><td>'+l.s+'</td><td>'+l.m+'</td></tr>';
+  });
+}
+function filterLogs(s) { renderLogs(s, document.getElementById('logLevel').value); }
+function clearLogs() { state.logs=[]; renderLogs(); toast('Logs cleared','info'); }
+function generateSampleLogs() {
+  const lvs=['ok','warn','bad'],srcs=['System','Dublin','Frankfurt','alpha-0','Storage'],msgs=['Heartbeat confirmed','Latency spike','Parity passed','Checksum OK','Buffer rebalanced','Node rotated'];
+  for (let i=0;i<5;i++) state.logs.unshift({t:new Date().toLocaleTimeString([],{hour12:false}),l:lvs[Math.floor(Math.random()*3)],s:srcs[Math.floor(Math.random()*5)],m:msgs[Math.floor(Math.random()*6)]});
+  renderLogs(); toast('Sample logs generated','info');
+}
+
+// ============================================
+// NOTES
+// ============================================
+function saveNotes() {
+  const v = document.getElementById('notesEditor').value;
+  localStorage.setItem('s-notes', v);
+  document.getElementById('notesStatus').textContent = 'Auto-saved '+new Date().toLocaleTimeString([],{hour12:false});
+}
+function loadNotes() {
+  const v = localStorage.getItem('s-notes')||'';
+  document.getElementById('notesEditor').value = v;
+}
+function clearNotes() {
+  if (confirm('Clear all notes?')) { document.getElementById('notesEditor').value=''; saveNotes(); toast('Notes cleared','info'); }
+}
+function exportNotes() {
+  const v = document.getElementById('notesEditor').value;
+  const b = new Blob([v],{type:'text/plain'});
+  const u = URL.createObjectURL(b); const a = document.createElement('a');
+  a.href=u; a.download='sentinel-notes-'+Date.now()+'.txt'; a.click();
+  URL.revokeObjectURL(u); toast('Notes exported','success');
+}
+function copyNotes() {
+  const v = document.getElementById('notesEditor').value;
+  navigator.clipboard.writeText(v).then(()=>toast('Notes copied to clipboard','success')).catch(()=>toast('Copy failed','error'));
+}
+
+// ============================================
+// TO-DO LIST
+// ============================================
+function saveTodos() {
+  localStorage.setItem('s-todos', JSON.stringify(state.todos));
+}
+function renderTodos() {
+  const list = document.getElementById('todoList');
+  const total = document.getElementById('todoCount');
+  const done = document.getElementById('todoDone');
+  list.innerHTML = '';
+  let c=0;
+  state.todos.forEach((t,i) => {
+    if (t.done) c++;
+    const div = document.createElement('div');
+    div.className = 'todo-item'+(t.done?' done':'');
+    div.innerHTML = '<input type="checkbox" '+(t.done?'checked':'')+' onchange="toggleTodo('+i+')">'
+      +'<span class="todo-text">'+t.text+'</span>'
+      +'<button class="todo-del" onclick="deleteTodo('+i+')">X</button>';
+    list.appendChild(div);
+  });
+  total.textContent = state.todos.length;
+  done.textContent = c;
+}
+function addTodo() {
+  const inp = document.getElementById('todoInput');
+  const t = inp.value.trim();
+  if (!t) return;
+  state.todos.push({text:t, done:false});
+  saveTodos(); renderTodos(); inp.value='';
+  toast('Task added','success');
+}
+function toggleTodo(i) {
+  state.todos[i].done = !state.todos[i].done;
+  saveTodos(); renderTodos();
+}
+function deleteTodo(i) {
+  state.todos.splice(i,1);
+  saveTodos(); renderTodos();
+  toast('Task removed','info');
+}
+function clearCompleted() {
+  state.todos = state.todos.filter(t => !t.done);
+  saveTodos(); renderTodos();
+  toast('Completed tasks cleared','info');
+}
+function clearAllTodos() {
+  if (confirm('Delete all tasks?')) { state.todos=[]; saveTodos(); renderTodos(); toast('All tasks cleared','info'); }
+}
+
+// ============================================
+// CALCULATOR
+// ============================================
+let calcExpr = '';
+function calcInput(v) {
+  calcExpr += v;
+  document.getElementById('calcDisplay').textContent = calcExpr || '0';
+}
+function calcClear() { calcExpr=''; document.getElementById('calcDisplay').textContent='0'; }
+function calcBackspace() { calcExpr=calcExpr.slice(0,-1); document.getElementById('calcDisplay').textContent=calcExpr||'0'; }
+function calcEquals() {
+  try {
+    const result = Function('"use strict";return ('+calcExpr+')')();
+    state.calcHistory.unshift(calcExpr+' = '+result);
+    if (state.calcHistory.length>20) state.calcHistory.pop();
+    localStorage.setItem('s-calc', JSON.stringify(state.calcHistory));
+    renderCalcHistory();
+    calcExpr = String(result);
+    document.getElementById('calcDisplay').textContent = result;
+  } catch(e) {
+    toast('Invalid expression','error');
+    document.getElementById('calcDisplay').textContent = 'Error';
+    calcExpr = '';
+  }
+}
+function renderCalcHistory() {
+  const el = document.getElementById('calcHistory');
+  if (!el) return;
+  if (state.calcHistory.length===0) { el.innerHTML = '<div style="color:var(--td);">No calculations yet.</div>'; return; }
+  el.innerHTML = state.calcHistory.map(h => '<div style="padding:3px 0;border-bottom:1px solid var(--br);">'+h+'</div>').join('');
+}
+function clearCalcHistory() { state.calcHistory=[]; localStorage.setItem('s-calc','[]'); renderCalcHistory(); toast('History cleared','info'); }
+
+// ============================================
+// CLOCK & METRICS
+// ============================================
+function startClock() {
+  setInterval(() => { document.getElementById('clockDisplay').textContent = new Date().toLocaleTimeString([],{hour12:false}); }, 1000);
+  updateUptime(); setInterval(updateUptime, 60000);
+}
+function updateUptime() {
+  const d = Date.now()-state.startTime;
+  const el = document.getElementById('uptimeDisplay');
+  if (el) el.textContent = Math.floor(d/86400000)+'d '+Math.floor((d%86400000)/3600000)+'h '+Math.floor((d%3600000)/60000)+'m';
+}
+function startMetrics() {
+  setInterval(() => {
+    const lat = (Math.random()*1.5+2.5).toFixed(2), sc = (Math.random()*8+60).toFixed(1);
+    const sy = (Math.random()*0.5+1.5).toFixed(2);
+    const risk = Math.max(8,Math.min(76,Math.round(32+Math.random()*6-3)));
+    document.getElementById('metricLatency').textContent = lat+' ms';
+    document.getElementById('metricScan').textContent = sc+'k/s';
+    document.getElementById('opSync').textContent = 'Sync: '+sy+' TB/s';
+    document.getElementById('riskScoreDisplay').textContent = risk+'/100';
+    if (!state.healing) {
+      document.getElementById('riskBarFill').style.width = risk+'%';
+      document.getElementById('riskBarFill').className = 'fl '+(risk<24?'gr':risk<48?'yw':'rd');
+    }
+    const cpu = Math.round(Math.random()*30+30), mem = Math.round(Math.random()*20+55);
+    const disk = Math.round(Math.random()*15+45), net = Math.round(Math.random()*20+50);
+    document.getElementById('cpuVal').textContent = cpu+'%';
+    document.getElementById('cpuBar').style.width = cpu+'%';
+    document.getElementById('memVal').textContent = mem+'%';
+    document.getElementById('memBar').style.width = mem+'%';
+    document.getElementById('diskVal').textContent = (Math.random()*0.8+0.8).toFixed(1)+' GB/s';
+    document.getElementById('diskBar').style.width = disk+'%';
+    document.getElementById('netVal').textContent = Math.round(Math.random()*400+600)+' MB/s';
+    document.getElementById('netBar').style.width = net+'%';
+    refreshChart(risk);
+    if (Math.random()>0.75) {
+      const msgs = [['Mirror heartbeat from Frankfurt.','ok'],['Stale node rotated.','warn'],['Parity anchor refreshed.','ok'],['Checksum audit 96/96.','ok']];
+      const m = msgs[Math.floor(Math.random()*msgs.length)]; pushFeed(m[0],m[1]);
+    }
+  }, 1500);
+}
+function refreshChart(v) { state.chartVals.push(v); while (state.chartVals.length>12) state.chartVals.shift(); renderChart(); }
+function renderChart() {
+  const w=600,h=120,step=w/Math.max(state.chartVals.length-1,1);
+  const pts = state.chartVals.map((v,i)=>[i*step,h-(v/100)*(h-16)-8]);
+  const line = document.getElementById('trendLine'), area = document.getElementById('trendArea');
+  if (line) line.setAttribute('points',pts.map(p=>p[0]+','+p[1]).join(' '));
+  if (area) area.setAttribute('points',['0,'+h,...pts.map(p=>p[0]+','+p[1]),w+','+h].join(' '));
+}
+function pushFeed(msg,lv) {
+  const f = document.getElementById('feedList'); if (!f) return;
+  const it = document.createElement('div'); it.className = 'fi';
+  const t = new Date().toLocaleTimeString([],{hour12:false});
+  const cl = lv==='bad'?'bd':lv==='warn'?'wn':lv==='info'?'in':'ok';
+  it.innerHTML = '<span class="ftm">['+t+']</span><span class="fm '+cl+'">'+msg+'</span>';
+  f.prepend(it); while (f.children.length>10) f.removeChild(f.lastElementChild);
+}
+
+// ============================================
+// BADGE SYSTEM
+// ============================================
+function updateBadges() {
+  const errCount = state.shards.filter(s=>s.status==='error').length;
+  const warnCount = state.shards.filter(s=>s.status==='warn').length;
+  const shardBadge = document.getElementById('shardBadge');
+  if (shardBadge) {
+    const total = errCount + warnCount;
+    shardBadge.textContent = total;
+    shardBadge.style.display = total > 0 ? '' : 'none';
+    shardBadge.style.background = errCount > 0 ? 'var(--rd)' : 'var(--yw)';
+  }
+}
+function clearAlerts() {
+  document.querySelectorAll('#alertBody tr').forEach(r => { const s=r.cells[4]; if(s) s.innerHTML='<span class="pl gr">Resolved</span>'; });
+  document.getElementById('alertBadge').textContent = '0';
+  document.getElementById('alertBadge').style.display = 'none';
+  toast('All alerts resolved','success');
+  playAlertSound('success');
+}
+function generateAlert() {
+  const b = document.getElementById('alertBody');
+  const as = [['Critical','rd','alpha-0','New integrity drift','Active'],['Warning','yw','Network','Latency spike','Active'],['Info','bl','System','Key rotation','New']];
+  const a = as[Math.floor(Math.random()*as.length)];
+  b.insertAdjacentHTML('afterbegin','<tr><td><span class="pl '+a[1]+'">'+a[0]+'</span></td><td>'+new Date().toLocaleTimeString([],{hour12:false})+'</td><td>'+a[2]+'</td><td>'+a[3]+'</td><td><span class="pl '+a[1]+'">'+a[4]+'</span></td></tr>');
+  const badge = document.getElementById('alertBadge');
+  badge.textContent = parseInt(badge.textContent||'0')+1;
+  badge.style.display = '';
+  toast('Alert: '+a[3],'error');
+  playAlertSound('error');
+}
+
+// ============================================
+// TERMINAL
+// ============================================
+function termAppend(line,color) {
+  const log = document.getElementById('terminalLog');
+  if (!log) return;
+  const r = document.createElement('div'); r.textContent = '> '+line; r.style.color = color||'var(--td)';
+  log.appendChild(r); log.scrollTop = log.scrollHeight;
+}
+function termCmd(e) {
+  if (e.key!=='Enter') return;
+  const inp = document.getElementById('termInput'), out = document.getElementById('termOutput');
+  const cmd = inp.value.trim(); inp.value = '';
+  if (!cmd) return;
+  const p = '<span style="color:var(--yw);">sentinel@archive</span><span style="color:var(--ac);">:~$</span>';
+  out.insertAdjacentHTML('beforeend','<div>'+p+' '+cmd+'</div>');
+  const cmds = {
+    help:()=>out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">Commands: help, status, shards, heal, clear, theme, uptime, version, nodes, scan, export, drill</div>'),
+    status:()=>out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">[OK] '+state.shards.filter(s=>s.status==='ok').length+'/96 shards healthy.</div>'),
+    shards:()=>out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">OK:'+state.shards.filter(s=>s.status==='ok').length+' WARN:'+state.shards.filter(s=>s.status==='warn').length+' ERR:'+state.shards.filter(s=>s.status==='error').length+' BUILD:'+state.shards.filter(s=>s.status==='rebuilding').length+'</div>'),
+    heal:()=>{out.insertAdjacentHTML('beforeend','<div style="color:var(--ac);">[TRIGGER] Heal...</div>');setTimeout(()=>healSystem(),300);},
+    clear:()=>{out.innerHTML='';},
+    uptime:()=>{const d=Math.floor((Date.now()-state.startTime)/86400000);const h=Math.floor(((Date.now()-state.startTime)%86400000)/3600000);out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">'+d+'d '+h+'h</div>');},
+    version:()=>out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">Sentinel Archive v3.1.0</div>'),
+    nodes:()=>state.nodes.forEach(n=>out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">'+n.label+': '+n.status+'</div>')),
+    scan:()=>{out.insertAdjacentHTML('beforeend','<div style="color:var(--ac);">[SCAN] Scanning...</div>');setTimeout(()=>out.insertAdjacentHTML('beforeend','<div style="color:var(--gr);">[OK] No threats.</div>'),1500);},
+    export:()=>{exportSnapshot();out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">Exported.</div>');},
+    drill:()=>{launchDrill();out.insertAdjacentHTML('beforeend','<div style="color:var(--yw);">[DRILL] Started.</div>');},
+    theme:()=>{const t=cmd.split(' ')[1];if(t){setTheme(t);out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">Theme: '+t+'</div>');}else out.insertAdjacentHTML('beforeend','<div style="color:var(--td);">Usage: theme [name]</div>');},
+  };
+  if (cmds[cmd]) cmds[cmd]();
+  else out.insertAdjacentHTML('beforeend','<div style="color:var(--rd);">Unknown: '+cmd+'</div>');
+  out.scrollTop = out.scrollHeight;
+  const cur = document.getElementById('termCursor'); if (cur) cur.scrollIntoView();
+}
+function termClear() { document.getElementById('termOutput').innerHTML = '<div><span style="color:var(--yw);">sentinel@archive</span><span style="color:var(--ac);">:~$</span> <span id="termCursor">_</span></div>'; }
+function termHelp() { document.getElementById('termInput').value='help'; termCmd({key:'Enter'}); }
+
+// ============================================
+// AUDIO ALERT SYSTEM
+// ============================================
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playAlertSound(type) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if (type === 'error') {
+      osc.frequency.setValueAtTime(800, ctx.currentTime); osc.frequency.setValueAtTime(600, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.35);
+    } else if (type === 'warning') {
+      osc.frequency.setValueAtTime(660, ctx.currentTime); gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.2);
+    } else if (type === 'success') {
+      osc.frequency.setValueAtTime(523, ctx.currentTime); osc.frequency.setValueAtTime(659, ctx.currentTime + 0.08);
+      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.16); gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.35);
+    } else {
+      osc.frequency.setValueAtTime(440, ctx.currentTime); gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
+    }
+  } catch(e) {}
+}
+
+// ============================================
+// SYSTEM ACTIONS - FAST & RESPONSIVE
+// ============================================
+function healSystem() {
+  if (state.healing) return;
+  state.healing = true;
+  playAlertSound('warning');
+  document.getElementById('integrityStatus').textContent = 'HEALING';
+  document.getElementById('integrityStatus').style.color = 'var(--yw)';
+  document.getElementById('integrityBadge').textContent = 'HEALING';
+  document.getElementById('integrityDot').className = 'sd y blk';
+  document.getElementById('riskBarFill').style.width = '35%';
+  document.getElementById('riskBarFill').className = 'fl yw';
+  document.getElementById('riskScoreDisplay').textContent = '35/100';
+  document.getElementById('opHealth').innerHTML = 'Health: <strong style="color:var(--yw);">Repairing...</strong>';
+  document.getElementById('slaDisplay').textContent = '0m 48s';
+  document.getElementById('driftDisplay').textContent = 'Reducing';
+  termAppend('Repair pipeline started...','#cbd5e1');
+  pushFeed('Recovery pipeline engaged.','warn');
+  ['Sampling parity...','Rebuilding shards...','Applying schedule...','Sealing clusters...']
+    .forEach((l,i) => setTimeout(()=>termAppend(l,i<2?'#cbd5e1':'#99f6e4'),60+i*60));
+  setTimeout(() => {
+    document.querySelectorAll('.sc.er,.sc.bd').forEach(c=>c.className='sc ok');
+    termAppend('SUCCESS: integrity restored.','#86efac');
+    document.getElementById('integrityStatus').textContent = 'SYSTEM STABLE';
+    document.getElementById('integrityStatus').style.color = 'var(--gr)';
+    document.getElementById('integrityBadge').textContent = 'SECURE';
+    document.getElementById('integrityDot').className = 'sd g';
+    document.getElementById('riskBarFill').style.width = '8%';
+    document.getElementById('riskBarFill').className = 'fl gr';
+    document.getElementById('riskScoreDisplay').textContent = '8/100';
+    document.getElementById('opHealth').innerHTML = 'Health: <strong style="color:var(--gr);">Stable</strong>';
+    document.getElementById('slaDisplay').textContent = '0m 28s';
+    document.getElementById('driftDisplay').textContent = 'Minimal';
+    refreshChart(88);
+    pushFeed('Autonomous healing completed.','ok');
+    playAlertSound('success');
+    document.getElementById('shardBadge').textContent = '0';
+    document.getElementById('shardBadge').style.display = 'none';
+    state.healing = false;
+  }, 500);
+}
+function launchDrill() {
+  pushFeed('Resilience drill started.','warn');
+  playAlertSound('warning');
+  termAppend('Launching drill...','#fde68a');
+  refreshChart(42);
+  document.getElementById('driftDisplay').textContent = 'Observed';
+  document.getElementById('slaDisplay').textContent = '1m 30s';
+  setTimeout(() => {
+    termAppend('Drill complete.','#86efac');
+    pushFeed('Drill complete.','ok');
+    playAlertSound('success');
+    document.getElementById('driftDisplay').textContent = 'Low';
+    document.getElementById('slaDisplay').textContent = '1m 10s';
+    refreshChart(58);
+  }, 400);
+}
+function exportSnapshot() {
+  const snap = {
+    capturedAt: new Date().toISOString(), version: '3.1.0',
+    status: document.getElementById('integrityStatus').textContent,
+    healthyShards: state.shards.filter(s=>s.status==='ok').length,
+    totalShards: state.shards.length,
+    riskScore: document.getElementById('riskScoreDisplay').textContent,
+    uptime: Math.floor((Date.now()-state.startTime)/1000)
+  };
+  const b = new Blob([JSON.stringify(snap,null,2)],{type:'application/json'});
+  const u = URL.createObjectURL(b); const a = document.createElement('a');
+  a.href=u; a.download='snapshot-'+Date.now()+'.json'; a.click();
+  URL.revokeObjectURL(u);
+  termAppend('Snapshot exported.','#cbd5e1');
+  pushFeed('Operator exported snapshot.','ok');
+  toast('Snapshot exported','success');
+  playAlertSound('success');
+}
+function toggleMode() {
+  state.mode = state.mode==='alert'?'calm':'alert';
+  document.getElementById('modeToggleBtn').textContent = state.mode==='alert'?'Stealth':'Alert';
+  termAppend('Mode: '+state.mode,'#cbd5e1'); toast('Mode: '+state.mode,'info');
+  playAlertSound('info');
+}
+
+// ============================================
+// SETTINGS
+// ============================================
+function toggleSetting(k) {
+  state.settings[k] = !state.settings[k];
+  const el = document.getElementById('toggle'+k.charAt(0).toUpperCase()+k.slice(1));
+  if (el) el.classList.toggle('on');
+  toast(k.charAt(0).toUpperCase()+k.slice(1)+': '+(state.settings[k]?'ON':'OFF'),'info');
+}
+
+// ============================================
+// BACKUP
+// ============================================
+function startBackup() {
+  const n = document.getElementById('backupName').value||'Auto-Backup';
+  toast('Backup "'+n+'" started','info');
+  termAppend('Backup "'+n+'" initiated...','#cbd5e1');
+  playAlertSound('info');
+  setTimeout(() => { termAppend('Backup "'+n+'" complete.','#86efac'); toast('Backup complete','success'); playAlertSound('success'); }, 1500);
+}
+function restoreBackup(n) {
+  if (confirm('Restore from "'+n+'"?')) {
+    toast('Restoring "'+n+'"...','warning');
+    termAppend('Restoring "'+n+'"...','#fde68a');
+    playAlertSound('warning');
+    setTimeout(() => { termAppend('Restore "'+n+'" done.','#86efac'); toast('Restore complete','success'); playAlertSound('success'); }, 1500);
+  }
+}
+
+// ============================================
+// REPORTS
+// ============================================
+function generateReport() {
+  const type = document.getElementById('reportType').value;
+  const format = document.querySelector('input[name="rf"]:checked').value;
+  const incM = document.getElementById('incMetrics').checked;
+  const incS = document.getElementById('incShards').checked;
+  const incA = document.getElementById('incAlerts').checked;
+  const incN = document.getElementById('incNodes').checked;
+
+  const okShards = state.shards.filter(s=>s.status==='ok').length;
+  const warnShards = state.shards.filter(s=>s.status==='warn').length;
+  const errShards = state.shards.filter(s=>s.status==='error').length;
+  const buildShards = state.shards.filter(s=>s.status==='rebuilding').length;
+
+  const reportData = {
+    title: 'Sentinel Archive ' + type,
+    generated: new Date().toISOString(),
+    version: '3.1.0',
+    sections: {}
+  };
+
+  if (incM) {
+    reportData.sections.metrics = {
+      capacity: '12.8 PB',
+      latency: document.getElementById('metricLatency').textContent,
+      clusters: '1,408',
+      scanRate: document.getElementById('metricScan').textContent,
+      riskScore: document.getElementById('riskScoreDisplay').textContent,
+      availability: document.getElementById('availDisplay').textContent,
+      uptime: document.getElementById('uptimeDisplay').textContent
+    };
+  }
+  if (incS) {
+    reportData.sections.shards = { total: 96, healthy: okShards, warning: warnShards, error: errShards, rebuilding: buildShards };
+  }
+  if (incN) {
+    reportData.sections.nodes = state.nodes.map(n => ({ id: n.id, label: n.label, status: n.status }));
+  }
+
+  let content = '', filename = '', mimeType = '';
+
+  switch(format) {
+    case 'json':
+      content = JSON.stringify(reportData, null, 2);
+      filename = 'sentinel-report-'+Date.now()+'.json';
+      mimeType = 'application/json';
+      break;
+
+    case 'csv':
+      let csvLines = ['Report,Sentinel Archive ' + type];
+      csvLines.push('Generated,' + reportData.generated);
+      csvLines.push('Version,' + reportData.version);
+      csvLines.push('');
+      if (incM) {
+        csvLines.push('METRICS');
+        csvLines.push('Metric,Value');
+        for (let k in reportData.sections.metrics) csvLines.push(k+','+reportData.sections.metrics[k]);
+        csvLines.push('');
+      }
+      if (incS) {
+        csvLines.push('SHARDS');
+        csvLines.push('Category,Count');
+        csvLines.push('Total,96');
+        csvLines.push('Healthy,'+okShards);
+        csvLines.push('Warning,'+warnShards);
+        csvLines.push('Error,'+errShards);
+        csvLines.push('Rebuilding,'+buildShards);
+        csvLines.push('');
+      }
+      if (incN) {
+        csvLines.push('NODES');
+        csvLines.push('ID,Label,Status');
+        state.nodes.forEach(n => csvLines.push(n.id+','+n.label+','+n.status));
+      }
+      content = csvLines.join('\n');
+      filename = 'sentinel-report-'+Date.now()+'.csv';
+      mimeType = 'text/csv';
+      break;
+
+    case 'pdf':
+      content = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Sentinel Report</title>';
+      content += '<style>body{font-family:Arial;margin:40px;color:#333}h1{color:#2b8cbe}</style></head><body>';
+      content += '<h1>Sentinel Archive: ' + type + '</h1>';
+      content += '<p>Generated: ' + new Date().toLocaleString() + '</p>';
+      content += '<p>Version: 3.1.0</p><hr>';
+      if (incM) {
+        content += '<h2>Metrics</h2><ul>';
+        for (let k in reportData.sections.metrics) content += '<li><strong>'+k+'</strong>: '+reportData.sections.metrics[k]+'</li>';
+        content += '</ul>';
+      }
+      if (incS) {
+        content += '<h2>Shards</h2><p>Total: 96 &mdash; Healthy: '+okShards+' &mdash; Warning: '+warnShards+' &mdash; Error: '+errShards+' &mdash; Rebuilding: '+buildShards+'</p>';
+      }
+      if (incN) {
+        content += '<h2>Nodes</h2><ul>';
+        state.nodes.forEach(n => content += '<li>'+n.label+': '+n.status+'</li>');
+        content += '</ul>';
+      }
+      content += '<hr><p style="color:#999;">Generated by Sentinel Archive v3.1.0</p></body></html>';
+      filename = 'sentinel-report-'+Date.now()+'.html';
+      mimeType = 'text/html';
+      const w = window.open('', '_blank');
+      w.document.write(content);
+      w.document.close();
+      w.focus();
+      w.print();
+      toast('Report opened for PDF printing', 'success');
+      document.getElementById('reportPreview').innerHTML = 'Report opened in new window. Use browser Print (Ctrl+P) to save as PDF.';
+      return;
+
+    case 'html':
+      content = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Sentinel Report</title>';
+      content += '<style>body{font-family:Arial;margin:40px;color:#333;line-height:1.6}';
+      content += 'h1{color:#2b8cbe;border-bottom:2px solid #2b8cbe;padding-bottom:10px}';
+      content += 'h2{color:#555;margin-top:24px}';
+      content += 'table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px;text-align:left}';
+      content += 'th{background:#f5f5f5}</style></head><body>';
+      content += '<h1>Sentinel Archive: ' + type + '</h1>';
+      content += '<p><strong>Generated:</strong> ' + new Date().toLocaleString() + ' &mdash; <strong>Version:</strong> 3.1.0</p>';
+      if (incM) {
+        content += '<h2>System Metrics</h2><table><tr><th>Metric</th><th>Value</th></tr>';
+        for (let k in reportData.sections.metrics) content += '<tr><td>'+k+'</td><td>'+reportData.sections.metrics[k]+'</td></tr>';
+        content += '</table>';
+      }
+      if (incS) {
+        content += '<h2>Shard Status</h2><table><tr><th>Category</th><th>Count</th></tr>';
+        content += '<tr><td>Total</td><td>96</td></tr><tr><td>Healthy</td><td>'+okShards+'</td></tr><tr><td>Warning</td><td>'+warnShards+'</td></tr><tr><td>Error</td><td>'+errShards+'</td></tr><tr><td>Rebuilding</td><td>'+buildShards+'</td></tr>';
+        content += '</table>';
+      }
+      if (incN) {
+        content += '<h2>Node Status</h2><table><tr><th>ID</th><th>Label</th><th>Status</th></tr>';
+        state.nodes.forEach(n => content += '<tr><td>'+n.id+'</td><td>'+n.label+'</td><td>'+n.status+'</td></tr>');
+        content += '</table>';
+      }
+      content += '<hr><p style="color:#999;">Generated by Sentinel Archive v3.1.0</p></body></html>';
+      filename = 'sentinel-report-'+Date.now()+'.html';
+      mimeType = 'text/html';
+      break;
+  }
+
+  const blob = new Blob([content], {type: mimeType});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('reportPreview').innerHTML = 'Downloaded: ' + filename + ' (' + (blob.size/1024).toFixed(1) + ' KB)';
+  toast('Report downloaded as '+format.toUpperCase(), 'success');
+  termAppend('Report "'+type+'" exported as '+format.toUpperCase()+'.', '#86efac');
+  pushFeed('Report generated: '+type+' ['+format.toUpperCase()+']', 'ok');
+  playAlertSound('success');
+}
+
+// ============================================
+// API CONSOLE
+// ============================================
+function addCustomEndpoint() {
+  const url = prompt('Enter custom endpoint path:', '/api/v1/');
+  if (url) {
+    const sel = document.getElementById('apiEndpoint');
+    const opt = document.createElement('option');
+    opt.value = url; opt.textContent = url; opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+function sendRequest() {
+  const method = document.getElementById('apiMethod').value;
+  const endpoint = document.getElementById('apiEndpoint').value;
+  const headers = document.getElementById('apiHeaders').value;
+  const body = document.getElementById('apiBody').value;
+  const resEl = document.getElementById('apiResponse');
+  const statusEl = document.getElementById('apiStatus');
+
+  statusEl.innerHTML = '<span style="color:var(--yw);">Sending request...</span>';
+  resEl.innerHTML = '<div style="color:var(--td);">Waiting for response...</div>';
+
+  setTimeout(() => {
+    const statusCode = method === 'GET' ? 200 : method === 'POST' ? 201 : method === 'PUT' ? 200 : method === 'DELETE' ? 204 : 200;
+    const statusText = statusCode === 200 ? 'OK' : statusCode === 201 ? 'Created' : statusCode === 204 ? 'No Content' : 'OK';
+    const reqId = 'req_' + Math.random().toString(36).slice(2, 12);
+    const timestamp = new Date().toISOString();
+
+    let responseBody = {};
+
+    if (endpoint.includes('integrity')) {
+      responseBody = {
+        status: state.healing ? 'recovering' : 'operational',
+        timestamp: timestamp,
+        risk_score: parseInt(document.getElementById('riskScoreDisplay').textContent),
+        healthy_shards: state.shards.filter(s=>s.status==='ok').length,
+        total_shards: 96,
+        integrity_percent: (state.shards.filter(s=>s.status==='ok').length / 96 * 100).toFixed(1)
+      };
+    } else if (endpoint.includes('shards')) {
+      responseBody = { count: 96, healthy: state.shards.filter(s=>s.status==='ok').length, warning: state.shards.filter(s=>s.status==='warn').length, error: state.shards.filter(s=>s.status==='error').length, rebuilding: state.shards.filter(s=>s.status==='rebuilding').length, shards: state.shards.slice(0, 5) };
+    } else if (endpoint.includes('nodes')) {
+      responseBody = { count: state.nodes.length, nodes: state.nodes };
+    } else if (endpoint.includes('alerts')) {
+      responseBody = { count: parseInt(document.getElementById('alertBadge').textContent) || 0, alerts: [] };
+    } else if (endpoint.includes('backup')) {
+      responseBody = { status: method === 'POST' ? 'backup_initiated' : 'completed', last_backup: '2026-05-20T01:00:00Z', size: '2.4 GB' };
+    } else if (endpoint.includes('status')) {
+      responseBody = { status: 'operational', uptime: Math.floor((Date.now()-state.startTime)/1000)+'s', version: '3.1.0', shards_online: 96 };
+    } else {
+      responseBody = { message: 'Request processed successfully', endpoint: endpoint, method: method, timestamp: timestamp };
+    }
+
+    const resp = {
+      httpVersion: 'HTTP/2',
+      statusCode: statusCode,
+      statusText: statusText,
+      headers: {
+        'content-type': 'application/json',
+        'x-request-id': reqId,
+        'x-response-time': Math.floor(Math.random()*200+10)+'ms',
+        'x-sentinel-version': '3.1.0'
+      },
+      body: responseBody
+    };
+
+    const formatted = JSON.stringify(resp, null, 2);
+    resEl.innerHTML = '<div style="color:var(--ac);">HTTP/2 ' + statusCode + ' ' + statusText + '</div>'
+      + '<div style="color:var(--td);">x-request-id: ' + reqId + '</div>'
+      + '<div style="color:var(--td);">x-response-time: ' + resp.headers['x-response-time'] + '</div>'
+      + '<div style="color:var(--td);">content-type: application/json</div>'
+      + '<div>&nbsp;</div>'
+      + '<div style="color:var(--gr);">' + formatJsonSyntax(JSON.stringify(responseBody, null, 2)) + '</div>';
+
+    statusEl.innerHTML = '<span style="color:var(--gr);">' + method + ' ' + endpoint + ' &rarr; ' + statusCode + ' ' + statusText + ' (' + resp.headers['x-response-time'] + ')</span>';
+    termAppend('API: ' + method + ' ' + endpoint + ' -> ' + statusCode, '#cbd5e1');
+    toast('Request completed: ' + statusCode, statusCode < 300 ? 'success' : 'error');
+    playAlertSound(statusCode < 300 ? 'success' : 'error');
+  }, 400 + Math.random()*300);
+}
+
+function formatJsonSyntax(json) {
+  return json.replace(/"([^"]+)":/g, '<span style="color:var(--ts);">"$1"</span>:')
+    .replace(/"([^"]+)"/g, '<span style="color:var(--gr);">"$1"</span>')
+    .replace(/\b(true|false)\b/g, '<span style="color:var(--ac);">$1</span>')
+    .replace(/\b(\d+\.?\d*)\b/g, '<span style="color:var(--yw);">$1</span>');
+}
+
+function copyResponse() {
+  const el = document.getElementById('apiResponse');
+  const text = el.textContent;
+  navigator.clipboard.writeText(text).then(()=>toast('Response copied','success')).catch(()=>toast('Copy failed','error'));
+}
+function clearResponse() {
+  document.getElementById('apiResponse').innerHTML = '<div style="color:var(--td);">Response cleared.</div>';
+  document.getElementById('apiStatus').innerHTML = '';
+  toast('Response cleared','info');
+}
+
+// ============================================
+// FILES / SEARCH
+// ============================================
+function filterFiles(s) {
+  document.querySelectorAll('#fileTableBody tr').forEach(r => {
+    const n = r.cells[0].textContent.toLowerCase();
+    r.style.display = s&&!n.includes(s.toLowerCase())?'none':'';
+  });
+}
+function handleSearch(v) {
+  if (!v) return;
+  const f = state.shards.filter(s=>s.id.toLowerCase().includes(v.toLowerCase())||s.group.toLowerCase().includes(v.toLowerCase()));
+  if (f.length>0) toast('Found '+f.length+' shard(s)','info');
+}
+
+// ============================================
+// TOAST / MODAL
+// ============================================
+let toastCount = 0;
+function toast(msg, type) {
+  const c = document.getElementById('toastWrap');
+  const icons = {success:'[OK]', error:'[ERR]', warning:'[!!]', info:'[i]'};
+  const t = document.createElement('div');
+  t.className = 'ts2 '+(type||'info');
+  t.innerHTML = '<span class="tsi">'+(icons[type]||'[i]')+'</span> <span>'+msg+'</span>';
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('rm'); setTimeout(()=>t.remove(),200); }, 3000);
+}
+function showModal(id) { document.getElementById(id).classList.add('op'); }
+function closeModal(id) { document.getElementById(id).classList.remove('op'); }
+
+// SIDEBAR
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  const sb = document.getElementById('sidebar'), ma = document.getElementById('mainArea');
+  sb.classList.toggle('clps'); ma.classList.toggle('exp');
+  document.getElementById('sidebarToggle').innerHTML = sb.classList.contains('clps')?'&raquo;':'&laquo;';
+});
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey) {
+    const pages = ['dashboard','shards','network','logs','notes','todo','calc','alerts','backup','terminal','files','reports','api','help','settings'];
+    const num = parseInt(e.key);
+    if (num>=1&&num<=9) { e.preventDefault(); sw(pages[num-1]); }
+    switch(e.key) {
+      case 'h': e.preventDefault(); healSystem(); break;
+      case 'e': e.preventDefault(); exportSnapshot(); break;
+      case 'd': e.preventDefault(); launchDrill(); break;
+      case 'k': e.preventDefault(); document.getElementById('globalSearch').focus(); break;
+    }
+  }
+  if (e.key==='Escape') document.querySelectorAll('.mo.op').forEach(m => m.classList.remove('op'));
+});
+
+// DASHBOARD STATUS
+setInterval(() => {
+  const st = document.getElementById('dashStatus');
+  if (!st) return;
+  const ok = state.shards.filter(s=>s.status==='ok').length, total = state.shards.length;
+  st.innerHTML = ok===total?'<span class="sd g blk"></span> All systems operational'
+    : ok>total*0.8?'<span class="sd y blk"></span> Minor degradation'
+    : '<span class="sd r blk"></span> Critical degradation';
+}, 2000);
+
+console.log('Sentinel Archive v3.1.0 loaded. Ctrl+1-9=pages, Ctrl+H=heal, Ctrl+E=export, Ctrl+K=search.');
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHER-WING X1 | Sovereign Neural Sentinel</title>
+    <style>
+        :root { 
+            --bg: #020617; --sidebar: #0f172a; --accent: #0ea5e9; --accent-glow: rgba(14, 165, 233, 0.3);
+            --danger: #be123c; --success: #10b981; --warning: #f59e0b; --glass: rgba(30, 41, 59, 0.5);
+        }
+        * { box-sizing: border-box; font-family: 'Orbitron', 'Inter', sans-serif; cursor: crosshair; }
+        body { margin: 0; background: var(--bg); color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar - The Sovereign Command */
+        .sidebar { width: 300px; background: var(--sidebar); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; transition: 0.3s; }
+        .brand { padding: 40px 30px; font-size: 1.4rem; font-weight: 900; letter-spacing: 2px; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.05); text-shadow: 0 0 15px var(--accent-glow); }
+        .nav-section { padding: 25px 15px; flex-grow: 1; overflow-y: auto; }
+        .nav-label { font-size: 0.6rem; color: #475569; letter-spacing: 3px; padding-left: 15px; margin-bottom: 15px; }
+        .nav-item { padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; color: #94a3b8; display: flex; align-items: center; gap: 15px; margin-bottom: 8px; transition: 0.2s; border: 1px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.03); color: white; border-color: rgba(255,255,255,0.1); }
+        .nav-active { background: linear-gradient(90deg, #0ea5e920, transparent); color: var(--accent); border-left: 4px solid var(--accent); }
+
+        /* Main Viewport */
+        .viewport { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 50%, #0f172a, #020617); }
+        .top-bar { height: 70px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Stats Dashboard */
+        .main-content { padding: 30px; overflow-y: auto; }
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 25px; position: relative; overflow: hidden; }
+        .glass-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+
+        /* Visual Shard Cloud */
+        .shard-cloud { grid-column: span 3; display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; padding: 20px; }
+        .shard-hex { aspect-ratio: 1; background: #1e293b; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); transition: 0.5s; border: 1px solid rgba(255,255,255,0.1); }
+        .shard-active { background: var(--accent); box-shadow: 0 0 20px var(--accent-glow); animation: pulse 2s infinite; }
+        .shard-warning { background: var(--danger); animation: flicker 0.5s infinite; }
+
+        /* HUD Elements */
+        .hud-value { font-size: 2.2rem; font-weight: 900; margin-top: 10px; font-variant-numeric: tabular-nums; }
+        .hud-label { font-size: 0.7rem; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* Action Console */
+        .console-wrap { grid-column: span 1; display: flex; flex-direction: column; gap: 15px; }
+        .terminal { background: #000; border-radius: 15px; padding: 20px; font-family: 'Courier New'; font-size: 0.75rem; color: #10b981; height: 300px; overflow-y: auto; border: 1px solid #334155; }
+
+        .btn-mega { background: var(--accent); color: white; border: none; padding: 20px; border-radius: 15px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
+        .btn-mega:hover { box-shadow: 0 0 30px var(--accent-glow); transform: scale(1.02); }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes flicker { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 0.8; } }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand">AETHER-WING</div>
+        <div class="nav-section">
+            <div class="nav-label">COMMAND & CONTROL</div>
+            <div class="nav-item nav-active">🛰️ Global Sentinel</div>
+            <div class="nav-item">🧬 Neural Sharding</div>
+            <div class="nav-item">🛰️ Satellite Sync</div>
+            <div class="nav-label">QUANTUM STORAGE</div>
+            <div class="nav-item">💎 Vault Alpha</div>
+            <div class="nav-item">🌑 Dark-Site Recovery</div>
+            <div class="nav-item">📜 Cryptographic Ledger</div>
+            <div class="nav-label">SYSTEM</div>
+            <div class="nav-item">🔧 Optimization</div>
+            <div class="nav-item">🛡️ Firewall Zero</div>
+        </div>
+        <div style="padding: 20px; font-size: 0.7rem; color: #475569; text-align: center;">SECURE ACCESS: DHURGHAM_X1</div>
+    </div>
+
+    <div class="viewport">
+        <div class="top-bar">
+            <div>STATUS: <span style="color:var(--success)">[ SECURE ]</span></div>
+            <div style="font-family: monospace;" id="time">00:00:00</div>
+            <div style="display: flex; gap: 30px;">
+                <span>TEMP: 32°C</span>
+                <span>LATENCY: 4ms</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="bento-grid">
+                <div class="glass-card">
+                    <div class="hud-label">Sovereign Data</div>
+                    <div class="hud-value" id="storage">42.8 EB</div>
+                    <p style="font-size: 0.6rem; color:#475569">EXABYTES UNDER GUARDIANSHIP</p>
+                </div>
+                <div class="glass-card">
+                    <div class="hud-label">Neural Health</div>
+                    <div class="hud-value" style="color:var(--danger)" id="health">92.4%</div>
+                    <p style="font-size: 0.6rem; color:#475569">THREAT LEVEL: MINIMAL</p>
+                </div>
+                <div class="glass-card">
+                    <div class="hud-label">Node Traffic</div>
+                    <div class="hud-value" id="traffic">1.2 TB/s</div>
+                    <p style="font-size: 0.6rem; color:#475569">QUANTUM TUNNEL ACTIVE</p>
+                </div>
+                <div class="glass-card">
+                    <div class="hud-label">Security Uptime</div>
+                    <div class="hud-value" id="uptime">9,420 H</div>
+                    <p style="font-size: 0.6rem; color:#475569">ZERO DOWNTIME PROTOCOL</p>
+                </div>
+
+                <div class="glass-card shard-cloud" id="cloud">
+                    </div>
+
+                <div class="console-wrap">
+                    <div class="terminal" id="term">
+                        <div style="color:var(--accent)">> INITIALIZING AETHER-WING X1...</div>
+                        <div>> Loading Neural Shard Maps... Done.</div>
+                        <div style="color:var(--danger)">> WARN: Discontinuity in Sector 7G.</div>
+                        <div style="color:var(--warning)">> Awaiting Authorization...</div>
+                    </div>
+                    <button class="btn-mega" onclick="engageAether()">ENGAGE RECOVERY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cloud = document.getElementById('cloud');
+        const shards = [];
+        for(let i=0; i<48; i++) {
+            const s = document.createElement('div');
+            s.className = 'shard-hex';
+            if(i === 24) s.classList.add('shard-warning');
+            cloud.appendChild(s);
+            shards.push(s);
+        }
+
+        setInterval(() => {
+            document.getElementById('time').innerText = new Date().toLocaleTimeString();
+            document.getElementById('traffic').innerText = (Math.random() * 0.5 + 1.1).toFixed(2) + " TB/s";
+        }, 1000);
+
+        function engageAether() {
+            const btn = document.querySelector('.btn-mega');
+            const term = document.getElementById('term');
+            const health = document.getElementById('health');
+            
+            btn.innerText = "PHASING...";
+            btn.style.background = "#334155";
+            
+            const lines = [
+                "> Phasing through distributed nodes...",
+                "> Locking Sector 7G signature...",
+                "> Re-aligning quantum shards...",
+                "> Validating Aether-Sync protocol...",
+                "> DECRYPTION COMPLETE.",
+                "> INTEGRITY RESTORED TO 100%."
+            ];
+
+            let i = 0;
+            const timer = setInterval(() => {
+                const l = document.createElement('div');
+                l.innerText = lines[i];
+                l.style.color = i > 3 ? '#10b981' : '#f8fafc';
+                term.appendChild(l);
+                term.scrollTop = term.scrollHeight;
+                i++;
+                if(i === lines.length) {
+                    clearInterval(timer);
+                    document.querySelector('.shard-warning').classList.replace('shard-warning', 'shard-active');
+                    health.innerText = "100%";
+                    health.style.color = "var(--success)";
+                    btn.innerText = "SOVEREIGN SECURED";
+                    btn.style.background = "var(--success)";
+                }
+            }, 700);
+        }
+    </script>
+</body>
+</html>

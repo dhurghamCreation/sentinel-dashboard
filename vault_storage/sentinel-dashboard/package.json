@@ -1,0 +1,25 @@
+{
+    "private": true,
+    "name": "sentinel-universal-app",
+    "version": "2.1.0",
+    "dependencies": {
+        "react-dom": "latest",
+        "lucide-react": "latest",
+        "tailwindcss": "latest",
+        "framer-motion": "latest",
+        "react": "latest",
+        "next": "latest"
+    },
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev",
+        "start": "next start"
+    },
+    "description": "",
+    "main": "index.js",
+    "devDependencies": {},
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs"
+}

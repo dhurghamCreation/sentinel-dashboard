@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel Zenith | Enterprise Data Integrity Suite</title>
+    <style>
+        :root { --bg: #030712; --panel: rgba(17, 24, 39, 0.7); --accent: #38bdf8; --danger: #f43f5e; --success: #10b981; --border: rgba(255,255,255,0.08); }
+        * { box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; cursor: default; }
+        body { margin: 0; background: var(--bg); color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar - AWS Style */
+        .sidebar { width: 280px; background: #0f172a; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; }
+        .logo-area { padding: 30px; border-bottom: 1px solid var(--border); }
+        .logo-text { font-weight: 900; font-size: 1.4rem; color: var(--accent); letter-spacing: -1px; }
+        .nav-group { padding: 20px 10px; flex-grow: 1; }
+        .nav-label { font-size: 0.65rem; color: #475569; font-weight: 800; padding: 0 15px 10px; letter-spacing: 1px; }
+        .nav-btn { padding: 12px 15px; border-radius: 8px; font-size: 0.9rem; color: #94a3b8; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; cursor: pointer; transition: 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-btn.active { background: #0369a1; color: white; box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3); }
+
+        /* Content Area */
+        .viewport { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at top right, #0c4a6e, #030712); overflow-y: auto; }
+        .top-nav { height: 64px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(3, 7, 18, 0.5); backdrop-filter: blur(10px); }
+        .content { padding: 40px; }
+
+        /* Grid System */
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; gap: 20px; }
+        .glass-card { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        
+        /* Live Stats */
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .stat-value { font-size: 2rem; font-weight: 800; color: white; }
+        .stat-desc { font-size: 0.75rem; color: #64748b; margin-top: 5px; }
+
+        /* Integrity Matrix (Visual Shards) */
+        .matrix { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-top: 20px; }
+        .shard { aspect-ratio: 1; border-radius: 4px; background: #1e293b; border: 1px solid var(--border); }
+        .shard.healthy { background: var(--success); box-shadow: 0 0 10px var(--success); }
+        .shard.corrupt { background: var(--danger); box-shadow: 0 0 10px var(--danger); animation: pulse 1s infinite; }
+
+        /* Recovery Console */
+        .terminal { background: #000; height: 200px; border-radius: 12px; padding: 15px; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; color: #10b981; overflow-y: auto; border: 1px solid #334155; margin-top: 20px; }
+
+        /* Professional Buttons */
+        .action-btn { background: var(--accent); color: #0f172a; border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; font-size: 1rem; width: 100%; transition: 0.3s; cursor: pointer; margin-top: 20px; }
+        .action-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area">
+            <div class="logo-text">ZENITH.OS</div>
+        </div>
+        <div class="nav-group">
+            <div class="nav-label">MONITORING</div>
+            <div class="nav-btn active" onclick="location.reload()">🌐 Global Overview</div>
+            <div class="nav-btn">📊 Telemetry Data</div>
+            <div class="nav-btn">🛡️ Security Logs</div>
+            <div class="nav-label">RESOURCES</div>
+            <div class="nav-btn">📦 Vault Storage</div>
+            <div class="nav-btn">⚡ Edge Nodes</div>
+            <div class="nav-btn">🔗 API Gateway</div>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid var(--border);">
+            <div style="font-size: 0.8rem; color: #64748b;">Enterprise License:</div>
+            <div style="font-size: 0.9rem; font-weight: bold;">DHURGHAM_ADMIN</div>
+        </div>
+    </div>
+
+    <div class="viewport">
+        <div class="top-nav">
+            <div style="color: #94a3b8;">System Location: <strong>Galway, Ireland</strong></div>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <span id="clock" style="font-family: monospace;">00:00:00</span>
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #334155;"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="bento-grid">
+                <div class="glass-card">
+                    <div class="stat-header"><span>STORAGE</span></div>
+                    <div class="stat-value">12.4 PB</div>
+                    <div class="stat-desc">Across 4 Distributed Regions</div>
+                </div>
+                <div class="glass-card">
+                    <div class="stat-header"><span>SHARD HEALTH</span></div>
+                    <div class="stat-value text-danger" id="healthVal" style="color:var(--danger)">99.9%</div>
+                    <div class="stat-desc">Target Availability: 99.9999%</div>
+                </div>
+                <div class="glass-card">
+                    <div class="stat-header"><span>NETWORK</span></div>
+                    <div class="stat-value" id="netSpeed">482 GB/s</div>
+                    <div class="stat-desc">Encrypted Tunnel: Active</div>
+                </div>
+                <div class="glass-card">
+                    <div class="stat-header"><span>NODES</span></div>
+                    <div class="stat-value">1,402</div>
+                    <div class="stat-desc">Operational Clusters</div>
+                </div>
+
+                <div class="glass-card" style="grid-column: span 3;">
+                    <h3 style="margin-top: 0;">Integrity Matrix Shard Map</h3>
+                    <div class="matrix" id="matrix">
+                        </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3 style="margin-top: 0;">Quick Actions</h3>
+                    <button class="action-btn" onclick="runRecovery()">INITIATE RECON</button>
+                    <button class="action-btn" style="background:#1e293b; color:white; margin-top:10px;">PURGE CACHE</button>
+                </div>
+            </div>
+
+            <div class="terminal" id="term">
+                <div>[SYSTEM] Waiting for biometric verification...</div>
+                <div>[AUTH] Authenticated: Dhurgham Alsaadi</div>
+                <div>[ERR] CRITICAL: Fragment corruption detected in Shard 42.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Matrix
+        const matrix = document.getElementById('matrix');
+        for(let i=0; i<60; i++) {
+            const s = document.createElement('div');
+            s.className = 'shard healthy';
+            if(i === 42) s.className = 'shard corrupt';
+            matrix.appendChild(s);
+        }
+
+        // Live Clock
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+            document.getElementById('netSpeed').innerText = (Math.random() * 50 + 450).toFixed(1) + " GB/s";
+        }, 1000);
+
+        function runRecovery() {
+            const term = document.getElementById('term');
+            const hVal = document.getElementById('healthVal');
+            const btn = document.querySelector('.action-btn');
+            
+            btn.innerText = "PROCESSING...";
+            btn.disabled = true;
+
+            const logs = [
+                "[INFO] Fetching parity bits from Northern Europe Node...",
+                "[INFO] XOR Reconstruction in progress...",
+                "[INFO] Validating SHA-256 signatures...",
+                "[SUCCESS] Shard 42 Re-synchronized.",
+                "[SYS] Full Integrity Restored."
+            ];
+
+            let i = 0;
+            const interval = setInterval(() => {
+                const l = document.createElement('div');
+                l.innerText = logs[i];
+                term.appendChild(l);
+                term.scrollTop = term.scrollHeight;
+                i++;
+                if(i === logs.length) {
+                    clearInterval(interval);
+                    document.querySelector('.shard.corrupt').className = 'shard healthy';
+                    hVal.innerText = "100%";
+                    hVal.style.color = "var(--success)";
+                    btn.innerText = "SYSTEM SECURE";
+                    btn.style.background = "var(--success)";
+                }
+            }, 800);
+        }
+    </script>
+</body>
+</html>

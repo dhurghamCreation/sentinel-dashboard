@@ -1,0 +1,5 @@
+﻿node_modules/
+my_secret.txt
+.env
+dist/
+build/
