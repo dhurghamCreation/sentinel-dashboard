@@ -430,7 +430,7 @@ Ideas, issues, and pull requests are welcome. The project is organized around it
 
 ---
 
-## 👨 Designer & Creator
+##  Designer & Creator
 
 > **Dhurgham Alsaadi**
 >
